@@ -1,2 +1,29 @@
+# general
+*~
 *.class
 *.log
+tmp
+dump
+
+# SBT
+dist
+project/boot
+project/target
+project/plugins/target
+target
+.target
+
+# Play
+logs
+RUNNING_PID
+
+# IDE
+.idea
+.idea_modules
+
+# Scala-IDE specific
+.scala_dependencies
+.project
+.settings
+.cache-main
+.cache-tests
