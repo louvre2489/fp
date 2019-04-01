@@ -1,5 +1,6 @@
-package com.louvre2489.fp.domain.systemcharacteristics
+package com.louvre2489.fp.domain.entity
 
+import com.louvre2489.fp.domain.characteristics._
 import com.louvre2489.fp.domain.value.DI
 import org.scalatest.FlatSpec
 

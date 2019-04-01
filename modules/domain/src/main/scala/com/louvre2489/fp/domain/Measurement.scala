@@ -1,4 +1,4 @@
-package com.louvre2489.fp.domain.systemcharacteristics
+package com.louvre2489.fp.domain
 
 sealed trait Measurement
 
