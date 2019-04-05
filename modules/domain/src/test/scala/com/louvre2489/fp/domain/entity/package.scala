@@ -1,36 +1,43 @@
 package com.louvre2489.fp.domain
 
 import com.louvre2489.fp.domain.value.{ FunctionId, SubSystemId, SystemId }
-import com.louvre2489.fp.repository.{ FunctionRepository, GSCRepository, SubSystemRepository, SystemRepository }
+import com.louvre2489.fp.repository.repositoryInterface.{
+  FunctionRepositoryInterface,
+  GSCRepositoryInterface,
+  SubSystemRepositoryInterface,
+  SystemRepositoryInterface
+}
 
 package object entity {
 
-  implicit val functionRepo: FunctionRepository[Function, FunctionId] = new FunctionRepository[Function, FunctionId] {
+  implicit val functionRepo: FunctionRepositoryInterface[Function, FunctionId] =
+    new FunctionRepositoryInterface[Function, FunctionId] {
 
-    @Override
-    override def getAll: List[Function] = Nil
+      @Override
+      override def getAll: List[Function] = Nil
 
-    @Override
-    def findById(id: FunctionId): Option[Function] = None
+      @Override
+      def findById(id: FunctionId): Option[Function] = None
 
-    @Override
-    def save(f: Function) = Right(Unit)
-  }
+      @Override
+      def save(f: Function) = Right(Unit)
+    }
 
-  implicit val systemRepo: SystemRepository[SystemInfo, SystemId] = new SystemRepository[SystemInfo, SystemId] {
+  implicit val systemRepo: SystemRepositoryInterface[SystemInfo, SystemId] =
+    new SystemRepositoryInterface[SystemInfo, SystemId] {
 
-    @Override
-    override def getAll: List[SystemInfo] = Nil
+      @Override
+      override def getAll: List[SystemInfo] = Nil
 
-    @Override
-    def findById(id: SystemId): Option[SystemInfo] = None
+      @Override
+      def findById(id: SystemId): Option[SystemInfo] = None
 
-    @Override
-    def save(f: SystemInfo) = Right(Unit)
-  }
+      @Override
+      def save(f: SystemInfo) = Right(Unit)
+    }
 
-  implicit val subSystemRepo: SubSystemRepository[SubSystemInfo, SubSystemId] =
-    new SubSystemRepository[SubSystemInfo, SubSystemId] {
+  implicit val subSystemRepo: SubSystemRepositoryInterface[SubSystemInfo, SubSystemId] =
+    new SubSystemRepositoryInterface[SubSystemInfo, SubSystemId] {
 
       @Override
       override def getAll: List[SubSystemInfo] = Nil
@@ -42,7 +49,7 @@ package object entity {
       def save(f: SubSystemInfo) = Right(Unit)
     }
 
-  implicit val gscRepo: GSCRepository[GSC, SystemId] = new GSCRepository[GSC, SystemId] {
+  implicit val gscRepo: GSCRepositoryInterface[GSC, SystemId] = new GSCRepositoryInterface[GSC, SystemId] {
 
     def findById(id: SystemId): Option[GSC] = None
 

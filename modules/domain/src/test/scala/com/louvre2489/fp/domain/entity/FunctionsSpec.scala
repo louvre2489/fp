@@ -4,7 +4,6 @@ import com.louvre2489.fp.domain.datafunction._
 import com.louvre2489.fp.domain.entity
 import com.louvre2489.fp.domain.transactionalfunction._
 import com.louvre2489.fp.domain.value._
-import com.louvre2489.fp.repository.{ FunctionRepository, GSCRepository, SubSystemRepository, SystemRepository }
 import org.scalatest.FlatSpec
 
 class FunctionsSpec extends FlatSpec {

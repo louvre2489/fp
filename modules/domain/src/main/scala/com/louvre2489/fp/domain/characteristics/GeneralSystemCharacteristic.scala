@@ -2,12 +2,21 @@ package com.louvre2489.fp.domain.characteristics
 
 import com.louvre2489.fp.domain.value.DI
 
+/**
+  * システム特性
+  */
 sealed trait GeneralSystemCharacteristic {
 
   val di: DI
 
+  /**
+    * ポイントの最小値は0
+    */
   val MIN_POINT = 0
 
+  /**
+    * ポイントの最大値は5
+    */
   val MAX_POINT = 5
 }
 

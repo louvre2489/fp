@@ -2,7 +2,7 @@ package com.louvre2489.fp.domain.entity
 
 import com.louvre2489.fp.domain.characteristics._
 import com.louvre2489.fp.domain.value.{ DI, SystemId, ValueAdjustmentFactor }
-import com.louvre2489.fp.repository.GSCRepository
+import com.louvre2489.fp.repository.repositoryInterface.GSCRepositoryInterface
 
 case class GSC(
     dataCommunications: DataCommunications = DataCommunications(DI(0)),
@@ -19,7 +19,7 @@ case class GSC(
     operationalEase: OperationalEase = OperationalEase(DI(0)),
     multipleSites: MultipleSites = MultipleSites(DI(0)),
     facilitateChange: FacilitateChange = FacilitateChange(DI(0))
-)(implicit repository: GSCRepository[GSC, SystemId])
+)(implicit repository: GSCRepositoryInterface[GSC, SystemId])
     extends Entity[SystemId] {
 
   @Override

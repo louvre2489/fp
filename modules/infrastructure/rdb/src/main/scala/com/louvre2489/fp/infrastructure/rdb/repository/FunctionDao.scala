@@ -4,14 +4,15 @@ import com.louvre2489.fp.domain.datafunction.EIF
 import com.louvre2489.fp.domain.entity.{ ADD, Function, GSC, SubSystemInfo, SystemInfo }
 import com.louvre2489.fp.domain.transactionalfunction.EO
 import com.louvre2489.fp.domain.value.{ DET, DataMigrationFunction, FTR, FunctionId, RET, SubSystemId, SystemId }
-import com.louvre2489.fp.repository.FunctionRepository
+import com.louvre2489.fp.repository.repositoryInterface.FunctionRepositoryInterface
 
-object FunctionDao extends FunctionRepository[Function, FunctionId] {
+object FunctionDao extends FunctionRepositoryInterface[Function, FunctionId] {
 
-  def findById(id: FunctionId): Function = {
+  @Override
+  def findById(id: FunctionId): Option[Function] = {
 
-    val system    = SystemInfo(SystemId(789), "SYS", GSC())(SystemDao)
-    val subSystem = Some(SubSystemInfo(SubSystemId(123), "SUB")(SubSystemDao))
+    val system    = SystemInfo(SystemId(789), "SYS", GSC()(GSCDao))(SystemDao)
+    val subSystem = Some(SubSystemInfo(SubSystemId(123), "SUB", system)(SubSystemDao))
     val function = Function(FunctionId("ID"),
                             "TEST_FUNC",
                             system,
@@ -24,5 +25,13 @@ object FunctionDao extends FunctionRepository[Function, FunctionId] {
                             RET(5),
                             FTR(7))(this)
     Some(function)
+  }
+
+  @Override
+  override def getAll: List[Function] = Nil
+
+  @Override
+  def save(entity: Function): Either[Exception, Unit] = {
+    Left(new Exception)
   }
 }

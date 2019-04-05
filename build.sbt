@@ -8,19 +8,19 @@ lazy val domain = (project in file("modules/domain"))
   )
   .settings(coreSettings)
 
+lazy val interActor = (project in file("modules/interactor"))
+  .settings(
+    name := s"$baseName-interactor"
+  )
+  .settings(coreSettings)
+  .dependsOn(domain)
+
 lazy val application = (project in file("modules/application"))
   .settings(
     name := s"$baseName-application"
   )
   .settings(coreSettings)
-  .dependsOn(domain)
-
-lazy val entity = (project in file("modules/entity"))
-  .settings(
-    name := s"$baseName-entity"
-  )
-  .settings(coreSettings)
-  .dependsOn(domain, application)
+  .dependsOn(domain, interActor)
 
 lazy val http = (project in file("modules/infrastructure/http"))
   .settings(
@@ -39,7 +39,7 @@ lazy val http = (project in file("modules/infrastructure/http"))
     ),
   )
   .settings(coreSettings)
-  .dependsOn(domain, application)
+  .dependsOn(domain, interActor)
 
 lazy val rdb = (project in file("modules/infrastructure/rdb"))
   .settings(
@@ -50,7 +50,7 @@ lazy val rdb = (project in file("modules/infrastructure/rdb"))
     )
   )
   .settings(coreSettings)
-  .dependsOn(domain, application, entity)
+  .dependsOn(domain, interActor)
 
 lazy val `root` = (project in file("."))
   .settings(
@@ -60,7 +60,7 @@ lazy val `root` = (project in file("."))
   .aggregate(
     domain,
     application,
-    entity,
+    interActor,
     http,
     rdb
   )

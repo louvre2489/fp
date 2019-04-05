@@ -3,12 +3,27 @@ package com.louvre2489.fp.domain.entity
 import com.louvre2489.fp.domain.datafunction.{ DataFunction, DataFunctionComplexity, FileType }
 import com.louvre2489.fp.domain.transactionalfunction.{ IOType, TransactionalFunction, TransactionalFunctionComplexity }
 import com.louvre2489.fp.domain.value._
-import com.louvre2489.fp.repository.FunctionRepository
+import com.louvre2489.fp.repository.repositoryInterface.FunctionRepositoryInterface
 
+/**
+  * 開発種類
+  */
 trait DevelopmentType
-object ADD  extends DevelopmentType
+
+/**
+  * 新規機能
+  */
+object ADD extends DevelopmentType
+
+/**
+  * 変更機能
+  */
 object CHGA extends DevelopmentType
-object DEL  extends DevelopmentType
+
+/**
+  * 削除機能
+  */
+object DEL extends DevelopmentType
 
 /**
   * @param functionId 機能ID
@@ -37,7 +52,7 @@ case class Function(functionId: FunctionId,
                     ioType: IOType,
                     det: DET,
                     ret: RET,
-                    ftr: FTR)(implicit repository: FunctionRepository[Function, FunctionId])
+                    ftr: FTR)(implicit repository: FunctionRepositoryInterface[Function, FunctionId])
     extends Entity[FunctionId] {
 
   @Override
@@ -51,8 +66,8 @@ case class Function(functionId: FunctionId,
     repository.save(this)
 
   /**
-    *  UFP = FunctionPoint of ILF/EIF + FunctionPoint ofEI/EO/EQ
-    * @return UTP
+    * UFP = ILF/EIFの未調整ファンクションポイント + EI/EO/EQのみ調整ファンクションポイント
+    * @return UTP 未調整ファンクションポイント
     */
   def UFP: UnadjustedFunctionPoint = {
 
@@ -64,36 +79,44 @@ case class Function(functionId: FunctionId,
   }
 }
 
+/**
+  * Functionのコレクションオブジェクト
+  * @param functions Functionのリスト
+  */
 case class Functions(private val functions: List[Function]) {
 
   /**
-    * Initialise with no function
+    * 空のコレクションオブジェクトを生成する
     */
   def this() = this(Nil)
 
   /**
-    *  functions that this object has
+    * このクラスのオブジェクトが保持しているFunctionの一覧
     * @return functions
     */
   def values: List[Function] = functions
 
   /**
-    * add function
-    * this method creates a new functions collection
-    * @param function function to add
-    * @return new function collection
+    * 機能の追加
+    * パラメーターの機能を追加した新しいコレクションオブジェクトを生成して返す
+    * @param function 追加機能
+    * @return 新しいコレクションオブジェクト
     */
   def addFunction(function: Function): Functions = Functions((function :: functions.reverse).reverse)
 
   /**
-    * remove function
-    * this method remove a passed function
-    * @param function function to remove
-    * @return
+    * 機能の削除
+    * パラメーターの機能を変更した新しいコレクションオブジェクトを生成して返す
+    * @param function 削除機能
+    * @return 新しいコレクションオブジェクト
     */
   def removeFunction(function: Function): Functions =
     Functions(functions.filter(f => f.functionId.value != function.functionId.value))
 
+  /**
+    * Functionを全て保存する
+    * @return
+    */
   def save: Either[Exception, Unit] = {
     Left(new Exception())
   }
