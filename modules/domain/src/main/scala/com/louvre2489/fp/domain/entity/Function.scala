@@ -3,7 +3,7 @@ package com.louvre2489.fp.domain.entity
 import com.louvre2489.fp.domain.datafunction.{ DataFunction, DataFunctionComplexity, FileType }
 import com.louvre2489.fp.domain.transactionalfunction.{ IOType, TransactionalFunction, TransactionalFunctionComplexity }
 import com.louvre2489.fp.domain.value._
-import com.louvre2489.fp.repository.repositoryInterface.FunctionRepositoryInterface
+import com.louvre2489.fp.repository.FunctionRepository
 
 /**
   * 開発種類
@@ -52,14 +52,8 @@ case class Function(functionId: FunctionId,
                     ioType: IOType,
                     det: DET,
                     ret: RET,
-                    ftr: FTR)(implicit repository: FunctionRepositoryInterface[Function, FunctionId])
+                    ftr: FTR)(implicit repository: FunctionRepository[Function, FunctionId])
     extends Entity[FunctionId] {
-
-  @Override
-  def getAll: List[Function] = repository.getAll
-
-  @Override
-  def findById(id: FunctionId): Option[Function] = repository.findById(id)
 
   @Override
   def save: Either[Exception, Unit] =

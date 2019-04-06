@@ -1,6 +1,6 @@
-package com.louvre2489.fp.repository.repositoryInterface.base
+package com.louvre2489.fp.repository.base
 
-trait BaseRepositoryInterface[A, ID] {
+trait BaseRepository[A, ID] {
 
   /**
     * Find the item that designated by ID

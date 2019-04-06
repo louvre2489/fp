@@ -8,23 +8,16 @@ lazy val domain = (project in file("modules/domain"))
   )
   .settings(coreSettings)
 
-lazy val interActor = (project in file("modules/interactor"))
-  .settings(
-    name := s"$baseName-interactor"
-  )
-  .settings(coreSettings)
-  .dependsOn(domain)
-
 lazy val application = (project in file("modules/application"))
   .settings(
     name := s"$baseName-application"
   )
   .settings(coreSettings)
-  .dependsOn(domain, interActor)
+  .dependsOn(domain)
 
-lazy val http = (project in file("modules/infrastructure/http"))
+lazy val infrastructure = (project in file("modules/infrastructure"))
   .settings(
-    name := s"$baseName-http",
+    name := s"$baseName-infrastracture",
     mainClass in Compile := Some(
       "com.louvre2489.fp.infrastructure.http.WebServer"),
     libraryDependencies ++= Seq(
@@ -35,22 +28,13 @@ lazy val http = (project in file("modules/infrastructure/http"))
       AkkaHttp.akka_http,
       AkkaHttp.akka_http_spray_json,
       AkkaHttp.akka_http_testkit % Test,
-      Spray.spray
+      Spray.spray,
+      ScalikeJdbc.scalikeJdbc,
+      H2.h2
     ),
   )
   .settings(coreSettings)
-  .dependsOn(domain, interActor)
-
-lazy val rdb = (project in file("modules/infrastructure/rdb"))
-  .settings(
-    name := s"$baseName-rdb",
-    libraryDependencies ++= Seq(
-      ScalikeJdbc.scalikeJdbc,
-      H2.h2
-    )
-  )
-  .settings(coreSettings)
-  .dependsOn(domain, interActor)
+  .dependsOn(domain, application)
 
 lazy val `root` = (project in file("."))
   .settings(
@@ -60,7 +44,5 @@ lazy val `root` = (project in file("."))
   .aggregate(
     domain,
     application,
-    interActor,
-    http,
-    rdb
+    infrastructure
   )

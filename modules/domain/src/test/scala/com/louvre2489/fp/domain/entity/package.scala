@@ -1,17 +1,12 @@
 package com.louvre2489.fp.domain
 
 import com.louvre2489.fp.domain.value.{ FunctionId, SubSystemId, SystemId }
-import com.louvre2489.fp.repository.repositoryInterface.{
-  FunctionRepositoryInterface,
-  GSCRepositoryInterface,
-  SubSystemRepositoryInterface,
-  SystemRepositoryInterface
-}
+import com.louvre2489.fp.repository.{ FunctionRepository, GSCRepository, SubSystemRepository, SystemRepository }
 
 package object entity {
 
-  implicit val functionRepo: FunctionRepositoryInterface[Function, FunctionId] =
-    new FunctionRepositoryInterface[Function, FunctionId] {
+  implicit val functionRepo: FunctionRepository[Function, FunctionId] =
+    new FunctionRepository[Function, FunctionId] {
 
       @Override
       override def getAll: List[Function] = Nil
@@ -23,8 +18,8 @@ package object entity {
       def save(f: Function) = Right(Unit)
     }
 
-  implicit val systemRepo: SystemRepositoryInterface[SystemInfo, SystemId] =
-    new SystemRepositoryInterface[SystemInfo, SystemId] {
+  implicit val systemRepo: SystemRepository[SystemInfo, SystemId] =
+    new SystemRepository[SystemInfo, SystemId] {
 
       @Override
       override def getAll: List[SystemInfo] = Nil
@@ -36,8 +31,8 @@ package object entity {
       def save(f: SystemInfo) = Right(Unit)
     }
 
-  implicit val subSystemRepo: SubSystemRepositoryInterface[SubSystemInfo, SubSystemId] =
-    new SubSystemRepositoryInterface[SubSystemInfo, SubSystemId] {
+  implicit val subSystemRepo: SubSystemRepository[SubSystemInfo, SubSystemId] =
+    new SubSystemRepository[SubSystemInfo, SubSystemId] {
 
       @Override
       override def getAll: List[SubSystemInfo] = Nil
@@ -49,7 +44,7 @@ package object entity {
       def save(f: SubSystemInfo) = Right(Unit)
     }
 
-  implicit val gscRepo: GSCRepositoryInterface[GSC, SystemId] = new GSCRepositoryInterface[GSC, SystemId] {
+  implicit val gscRepo: GSCRepository[GSC, SystemId] = new GSCRepository[GSC, SystemId] {
 
     def findById(id: SystemId): Option[GSC] = None
 
