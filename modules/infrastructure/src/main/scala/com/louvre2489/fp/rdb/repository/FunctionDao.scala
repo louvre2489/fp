@@ -4,9 +4,9 @@ import com.louvre2489.fp.domain.datafunction.EIF
 import com.louvre2489.fp.domain.entity.{ ADD, Function, GSC, SubSystemInfo, SystemInfo }
 import com.louvre2489.fp.domain.transactionalfunction.EO
 import com.louvre2489.fp.domain.value.{ DET, DataMigrationFunction, FTR, FunctionId, RET, SubSystemId, SystemId }
-import com.louvre2489.fp.repository.repositoryInterface.FunctionRepositoryInterface
+import com.louvre2489.fp.repository.FunctionRepository
 
-object FunctionDao extends FunctionRepositoryInterface[Function, FunctionId] {
+object FunctionDao extends FunctionRepository[Function, FunctionId] {
 
   @Override
   def findById(id: FunctionId): Option[Function] = {

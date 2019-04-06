@@ -2,9 +2,9 @@ package com.louvre2489.fp.infrastructure.rdb.repository
 
 import com.louvre2489.fp.domain.entity.{ GSC, SubSystemInfo, SystemInfo }
 import com.louvre2489.fp.domain.value.{ SubSystemId, SystemId }
-import com.louvre2489.fp.repository.repositoryInterface.SubSystemRepositoryInterface
+import com.louvre2489.fp.repository.SubSystemRepository
 
-object SubSystemDao extends SubSystemRepositoryInterface[SubSystemInfo, SubSystemId] {
+object SubSystemDao extends SubSystemRepository[SubSystemInfo, SubSystemId] {
 
   @Override
   def findById(id: SubSystemId): Option[SubSystemInfo] = {

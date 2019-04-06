@@ -2,9 +2,9 @@ package com.louvre2489.fp.infrastructure.rdb.repository
 
 import com.louvre2489.fp.domain.entity.{ GSC, SystemInfo }
 import com.louvre2489.fp.domain.value._
-import com.louvre2489.fp.repository.repositoryInterface.SystemRepositoryInterface
+import com.louvre2489.fp.repository.SystemRepository
 
-object SystemDao extends SystemRepositoryInterface[SystemInfo, SystemId] {
+object SystemDao extends SystemRepository[SystemInfo, SystemId] {
 
   @Override
   def findById(id: SystemId): Some[SystemInfo] = {
