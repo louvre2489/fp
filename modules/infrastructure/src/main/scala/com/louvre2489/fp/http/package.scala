@@ -1,4 +1,4 @@
-package com.louvre2489.fp.infrastructure
+package com.louvre2489.fp
 
 package object http {
 

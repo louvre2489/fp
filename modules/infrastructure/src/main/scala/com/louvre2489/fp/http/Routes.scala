@@ -1,4 +1,4 @@
-package com.louvre2489.fp.infrastructure.http
+package com.louvre2489.fp.http
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport

@@ -17,7 +17,7 @@ lazy val application = (project in file("modules/application"))
 
 lazy val infrastructure = (project in file("modules/infrastructure"))
   .settings(
-    name := s"$baseName-infrastracture",
+    name := s"$baseName-infrastructure",
     mainClass in Compile := Some(
       "com.louvre2489.fp.infrastructure.http.WebServer"),
     libraryDependencies ++= Seq(

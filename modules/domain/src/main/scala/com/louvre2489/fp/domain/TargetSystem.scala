@@ -58,7 +58,7 @@ case class TargetSystem(systemInfo: SystemInfo, functions: Functions = Functions
 
   /**
     * function points of the improve develop application
-    * @param oldFunctions oldFunctions is the functions before improvemnt
+    * @param oldFunctions oldFunctions is the functions before improvement
     * @param oldGSC oldGSC is the characteristics before improvement
     * @return
     */

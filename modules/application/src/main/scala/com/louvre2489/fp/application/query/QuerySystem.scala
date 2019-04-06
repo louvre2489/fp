@@ -4,7 +4,7 @@ import com.louvre2489.fp.domain.entity.SystemInfo
 import com.louvre2489.fp.domain.value.SystemId
 import com.louvre2489.fp.repository.SystemRepository
 
-class SystemListQuery(systemRepository: SystemRepository[SystemInfo, SystemId]) {
+class QuerySystem(systemRepository: SystemRepository[SystemInfo, SystemId]) {
 
   /**
     * 登録されているシステムの一覧を取得する

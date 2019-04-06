@@ -1,4 +1,4 @@
-package com.louvre2489.fp.infrastructure.rdb.repository
+package com.louvre2489.fp.rdb.repository
 
 import com.louvre2489.fp.domain.entity.GSC
 import com.louvre2489.fp.domain.value._

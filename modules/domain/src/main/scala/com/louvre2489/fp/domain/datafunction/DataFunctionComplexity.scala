@@ -119,8 +119,8 @@ object DataFunctionComplexity {
 
   /**
     * DET/RETのポイントから複雑さを算出する
-    * @param det
-    * @param ret
+    * @param det DET
+    * @param ret RET
     * @return 複雑さ
     */
   def complexity(det: DET, ret: RET): Complexity = {
