@@ -4,14 +4,19 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import akka.util.Timeout
+import com.louvre2489.fp.rdb.db.DBSettings
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 import scala.io.StdIn
+import scalikejdbc.config._
 
 object WebServer {
 
   def main(args: Array[String]) {
+
+    // DB セットアップ
+    DBs.setup(DBSettings.poolName)
 
     implicit val system: ActorSystem             = ActorSystem(ACTOR_SYSTEM_NAME)
     implicit val materializer: ActorMaterializer = ActorMaterializer()
@@ -33,6 +38,11 @@ object WebServer {
 
     bindingFuture
       .flatMap(_.unbind()) // trigger unbinding from the port
-      .onComplete(_ => system.terminate()) // and shutdown when done
+      .onComplete(_ => {
+        // DB接続終了
+        DBs.close(DBSettings.poolName)
+        // システム終了
+        system.terminate()
+      }) // and shutdown when done
   }
 }

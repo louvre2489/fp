@@ -6,6 +6,6 @@ trait ListItemRepository[A, ID] extends BaseRepository[A, ID] {
     *  Get all items
     * @return
     */
-  def getAll: List[A]
+  def findAll: List[A]
 
 }

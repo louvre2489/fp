@@ -10,5 +10,5 @@ class QueryFunctions(functionRepository: FunctionRepository[Function, FunctionId
     * 登録されている機能の一覧を取得する
     * @return 機能一覧
     */
-  def search: Functions = Functions(functionRepository.getAll)
+  def findAll: Functions = Functions(functionRepository.findAll)
 }

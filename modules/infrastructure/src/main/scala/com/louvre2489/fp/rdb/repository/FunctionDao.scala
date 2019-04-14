@@ -12,7 +12,7 @@ object FunctionDao extends FunctionRepository[Function, FunctionId] {
   def findById(id: FunctionId): Option[Function] = {
 
     val system    = SystemInfo(SystemId(789), "SYS", GSC()(GSCDao))(SystemDao)
-    val subSystem = Some(SubSystemInfo(SubSystemId(123), "SUB", system)(SubSystemDao))
+    val subSystem = Some(SubSystemInfo(SubSystemId(123), "SUB", SystemId(456))(SubSystemDao))
     val function = Function(FunctionId("ID"),
                             "TEST_FUNC",
                             system,
@@ -28,7 +28,7 @@ object FunctionDao extends FunctionRepository[Function, FunctionId] {
   }
 
   @Override
-  override def getAll: List[Function] = Nil
+  override def findAll: List[Function] = Nil
 
   @Override
   def save(entity: Function): Either[Exception, Unit] = {

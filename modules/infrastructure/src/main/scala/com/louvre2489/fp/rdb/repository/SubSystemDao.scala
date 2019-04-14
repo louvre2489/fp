@@ -1,24 +1,45 @@
 package com.louvre2489.fp.rdb.repository
 
-import com.louvre2489.fp.domain.entity.{ GSC, SubSystemInfo, SystemInfo }
+import com.louvre2489.fp.domain.entity.SubSystemInfo
 import com.louvre2489.fp.domain.value.{ SubSystemId, SystemId }
+import com.louvre2489.fp.rdb.db.BaseDao
 import com.louvre2489.fp.repository.SubSystemRepository
+import com.louvre2489.fp.rdb.models._
 
-object SubSystemDao extends SubSystemRepository[SubSystemInfo, SubSystemId] {
+object SubSystemDao extends BaseDao with SubSystemRepository[SubSystemInfo, SubSystemId] {
 
   @Override
   def findById(id: SubSystemId): Option[SubSystemInfo] = {
 
-    val systemInfo = SystemInfo(SystemId(789), "SYS", GSC()(GSCDao))(SystemDao)
-    val subSystem  = SubSystemInfo(SubSystemId(123), "SUB", systemInfo)(this)
-    Some(subSystem)
+    db readOnly { implicit session =>
+      SubSystem
+        .find(id.value)
+        .map { data =>
+          SubSystemInfo(SubSystemId(data.subSystemId), data.subSystemName, SystemId(data.systemId))(this)
+        }
+    }
   }
 
   @Override
-  override def getAll: List[SubSystemInfo] = Nil
+  override def findAll: List[SubSystemInfo] = {
+
+    db readOnly { implicit session =>
+      SubSystem
+        .findAll()
+        .map { data =>
+          SubSystemInfo(SubSystemId(data.subSystemId), data.subSystemName, SystemId(data.systemId))(this)
+        }
+    }
+  }
 
   @Override
   def save(entity: SubSystemInfo): Either[Exception, Unit] = {
-    Left(new Exception)
+    try {
+      SubSystem(entity.subSystemId.value, entity.subSystemName, entity.systemId.value).save()
+      Right(Unit)
+    } catch {
+      case e: Exception =>
+        Left(e)
+    }
   }
 }

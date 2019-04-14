@@ -9,7 +9,7 @@ import org.scalatest.FlatSpec
 class FunctionsSpec extends FlatSpec {
 
   val system    = SystemInfo(SystemId(789), "SYS", GSC())
-  val subSystem = Some(SubSystemInfo(SubSystemId(123), "SUB", system))
+  val subSystem = Some(SubSystemInfo(SubSystemId(123), "SUB", SystemId(456)))
 
   behavior of "Functions"
 

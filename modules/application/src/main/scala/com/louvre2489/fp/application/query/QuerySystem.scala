@@ -10,5 +10,5 @@ class QuerySystem(systemRepository: SystemRepository[SystemInfo, SystemId]) {
     * 登録されているシステムの一覧を取得する
     * @return システム一覧
     */
-  def search: List[SystemInfo] = systemRepository.getAll
+  def findAll: List[SystemInfo] = systemRepository.findAll
 }

@@ -30,6 +30,8 @@ lazy val infrastructure = (project in file("modules/infrastructure"))
       AkkaHttp.akka_http_testkit % Test,
       Spray.spray,
       ScalikeJdbc.scalikeJdbc,
+      ScalikeJdbc.scalikeJdbcConfig,
+      ScalikeJdbc.scalikeJdbcTest,
       H2.h2
     ),
   )
@@ -46,3 +48,4 @@ lazy val `root` = (project in file("."))
     application,
     infrastructure
   )
+// .enablePlugins(ScalikejdbcPlugin)

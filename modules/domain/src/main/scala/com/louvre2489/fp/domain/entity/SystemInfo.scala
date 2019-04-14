@@ -24,10 +24,10 @@ case class SystemInfo(systemId: SystemId, systemName: String, gsc: GSC)(
   * Management attributes of the sub system
   * @param subSystemId ID
   * @param subSystemName name of the sub system
-  * @param systemInfo SystemInfo object
+  * @param systemId System ID
   * @param repository sub system repository
   */
-case class SubSystemInfo(subSystemId: SubSystemId, subSystemName: String, systemInfo: SystemInfo)(
+case class SubSystemInfo(subSystemId: SubSystemId, subSystemName: String, systemId: SystemId)(
     implicit repository: SubSystemRepository[SubSystemInfo, SubSystemId]
 ) extends Entity[SubSystemId] {
 

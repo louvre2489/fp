@@ -9,7 +9,7 @@ package object entity {
     new FunctionRepository[Function, FunctionId] {
 
       @Override
-      override def getAll: List[Function] = Nil
+      override def findAll: List[Function] = Nil
 
       @Override
       def findById(id: FunctionId): Option[Function] = None
@@ -22,7 +22,7 @@ package object entity {
     new SystemRepository[SystemInfo, SystemId] {
 
       @Override
-      override def getAll: List[SystemInfo] = Nil
+      override def findAll: List[SystemInfo] = Nil
 
       @Override
       def findById(id: SystemId): Option[SystemInfo] = None
@@ -35,7 +35,7 @@ package object entity {
     new SubSystemRepository[SubSystemInfo, SubSystemId] {
 
       @Override
-      override def getAll: List[SubSystemInfo] = Nil
+      override def findAll: List[SubSystemInfo] = Nil
 
       @Override
       def findById(id: SubSystemId): Option[SubSystemInfo] = None

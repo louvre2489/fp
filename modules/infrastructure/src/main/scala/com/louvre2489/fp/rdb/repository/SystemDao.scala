@@ -2,22 +2,49 @@ package com.louvre2489.fp.rdb.repository
 
 import com.louvre2489.fp.domain.entity.{ GSC, SystemInfo }
 import com.louvre2489.fp.domain.value._
+import com.louvre2489.fp.rdb.db.BaseDao
 import com.louvre2489.fp.repository.SystemRepository
+import com.louvre2489.fp.rdb.models._
 
-object SystemDao extends SystemRepository[SystemInfo, SystemId] {
+object SystemDao extends BaseDao with SystemRepository[SystemInfo, SystemId] {
 
   @Override
-  def findById(id: SystemId): Some[SystemInfo] = {
+  def findById(id: SystemId): Option[SystemInfo] = {
 
-    val systemInfo = SystemInfo(SystemId(789), "SYS", GSC()(GSCDao))(this)
-    Some(systemInfo)
+    db readOnly { implicit session =>
+      System
+        .find(id.value)
+        .map { data =>
+          SystemInfo(SystemId(data.systemId), data.systemName, GSC()(GSCDao))(this)
+        }
+    }
   }
 
   @Override
-  override def getAll: List[SystemInfo] = Nil
+  override def findAll: List[SystemInfo] = {
+
+    db readOnly { implicit session =>
+      System
+        .findAll()
+        .map { data =>
+          SystemInfo(SystemId(data.systemId), data.systemName, GSC()(GSCDao))(this)
+        }
+    }
+  }
 
   @Override
   def save(entity: SystemInfo): Either[Exception, Unit] = {
-    Left(new Exception)
+    try {
+      System(entity.systemId.value, entity.systemName).save()
+      Right(Unit)
+    } catch {
+      case e: Exception =>
+        Left(e)
+    }
   }
+}
+
+object SystemAttr {
+  val col_system_id: String   = "system_id"
+  val col_system_name: String = "system_name"
 }

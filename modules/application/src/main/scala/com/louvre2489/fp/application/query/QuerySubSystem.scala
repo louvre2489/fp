@@ -6,5 +6,5 @@ import com.louvre2489.fp.repository.SubSystemRepository
 
 class QuerySubSystem(subSystemRepository: SubSystemRepository[SubSystemInfo, SubSystemId]) {
 
-  def search: List[SubSystemInfo] = subSystemRepository.getAll
+  def findAll: List[SubSystemInfo] = subSystemRepository.findAll
 }

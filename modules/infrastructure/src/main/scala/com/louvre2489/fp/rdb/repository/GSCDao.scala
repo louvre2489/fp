@@ -7,7 +7,7 @@ import com.louvre2489.fp.repository.GSCRepository
 object GSCDao extends GSCRepository[GSC, SystemId] {
 
   @Override
-  def findById(id: SystemId): Some[GSC] = {
+  def findById(id: SystemId): Option[GSC] = {
 
     val gscInfo = GSC()(this)
     Some(gscInfo)
