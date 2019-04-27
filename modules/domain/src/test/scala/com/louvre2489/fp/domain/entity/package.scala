@@ -1,6 +1,6 @@
 package com.louvre2489.fp.domain
 
-import com.louvre2489.fp.domain.value.{ FunctionId, SubSystemId, SystemId }
+import com.louvre2489.fp.domain.value.{ FunctionId, SubSystemId, SystemId, Version }
 import com.louvre2489.fp.repository.{ FunctionRepository, GSCRepository, SubSystemRepository, SystemRepository }
 
 package object entity {
@@ -41,12 +41,15 @@ package object entity {
       def findById(id: SubSystemId): Option[SubSystemInfo] = None
 
       @Override
+      override def findBySystemId(systemId: SystemId): List[SubSystemInfo] = Nil
+
+      @Override
       def save(f: SubSystemInfo) = Right(Unit)
     }
 
   implicit val gscRepo: GSCRepository[GSC, SystemId] = new GSCRepository[GSC, SystemId] {
 
-    def findById(id: SystemId): Option[GSC] = None
+    def find(id: SystemId, version: Version): Option[GSC] = None
 
     @Override
     def save(f: GSC) = Right(Unit)
