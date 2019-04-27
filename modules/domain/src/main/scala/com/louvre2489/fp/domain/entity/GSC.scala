@@ -1,10 +1,12 @@
 package com.louvre2489.fp.domain.entity
 
 import com.louvre2489.fp.domain.characteristics._
-import com.louvre2489.fp.domain.value.{ DI, SystemId, ValueAdjustmentFactor }
+import com.louvre2489.fp.domain.value.{ DI, SystemId, ValueAdjustmentFactor, Version }
 import com.louvre2489.fp.repository.GSCRepository
 
 case class GSC(
+    systemId: SystemId,
+    version: Version,
     dataCommunications: DataCommunications = DataCommunications(DI(0)),
     distributedDataProcessing: DistributedDataProcessing = DistributedDataProcessing(DI(0)),
     performance: Performance = Performance(DI(0)),
@@ -81,6 +83,8 @@ case class GSC(
     }
 
     GSC(
+      systemId,
+      version,
       dataCommunications,
       distributedDataProcessing,
       performance,

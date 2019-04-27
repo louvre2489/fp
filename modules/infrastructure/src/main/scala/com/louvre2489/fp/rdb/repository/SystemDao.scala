@@ -2,11 +2,17 @@ package com.louvre2489.fp.rdb.repository
 
 import com.louvre2489.fp.domain.entity.{ GSC, SystemInfo }
 import com.louvre2489.fp.domain.value._
-import com.louvre2489.fp.rdb.db.BaseDao
+import com.louvre2489.fp.rdb.db.{ BaseDao, BaseDaoObject }
 import com.louvre2489.fp.repository.SystemRepository
 import com.louvre2489.fp.rdb.models._
+import scalikejdbc.DB
 
-object SystemDao extends BaseDao with SystemRepository[SystemInfo, SystemId] {
+object SystemDao extends BaseDaoObject {
+
+  def apply()(implicit db: DB) = new SystemDao
+}
+
+class SystemDao(implicit db: DB) extends BaseDao with SystemRepository[SystemInfo, SystemId] {
 
   @Override
   def findById(id: SystemId): Option[SystemInfo] = {
@@ -15,7 +21,7 @@ object SystemDao extends BaseDao with SystemRepository[SystemInfo, SystemId] {
       System
         .find(id.value)
         .map { data =>
-          SystemInfo(SystemId(data.systemId), data.systemName, GSC()(GSCDao))(this)
+          SystemInfo(SystemId(data.systemId), data.systemName, GSC(SystemId(data.systemId), Version(1))(GSCDao()))(this)
         }
     }
   }
@@ -27,7 +33,7 @@ object SystemDao extends BaseDao with SystemRepository[SystemInfo, SystemId] {
       System
         .findAll()
         .map { data =>
-          SystemInfo(SystemId(data.systemId), data.systemName, GSC()(GSCDao))(this)
+          SystemInfo(SystemId(data.systemId), data.systemName, GSC(SystemId(data.systemId), Version(1))(GSCDao()))(this)
         }
     }
   }

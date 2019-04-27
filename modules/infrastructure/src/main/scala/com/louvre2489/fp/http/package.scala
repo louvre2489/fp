@@ -5,7 +5,7 @@ package object http {
   /**
     *  ActorSystem Name
     */
-  val ACTOR_SYSTEM_NAME = "fp-actor-system"
+  val ACTOR_SYSTEM_NAME = "actor.system.name"
 
   /**
     * Configuration Parameter:host

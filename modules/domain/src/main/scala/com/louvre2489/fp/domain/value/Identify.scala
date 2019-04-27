@@ -7,3 +7,5 @@ case class FunctionId(value: String) extends AnyVal with Value[String] with Iden
 case class SystemId(value: Long) extends AnyVal with Value[Long] with Identify
 
 case class SubSystemId(value: Long) extends AnyVal with Value[Long] with Identify
+
+case class ID[V, E](value: V) extends AnyVal with Value[V] with Identify

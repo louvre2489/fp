@@ -1,7 +1,7 @@
 package com.louvre2489.fp.domain.entity
 
 import com.louvre2489.fp.domain.characteristics._
-import com.louvre2489.fp.domain.value.DI
+import com.louvre2489.fp.domain.value.{ DI, SystemId, Version }
 import org.scalatest.FlatSpec
 
 class GSCSpec extends FlatSpec {
@@ -10,7 +10,7 @@ class GSCSpec extends FlatSpec {
 
   "Constructor" should "create 0 VAF" in {
 
-    val gsc = GSC()
+    val gsc = GSC(SystemId(999), Version(1))
 
     assert(gsc.dataCommunications.di.value === 0)
     assert(gsc.distributedDataProcessing.di.value === 0)
@@ -30,7 +30,7 @@ class GSCSpec extends FlatSpec {
 
   it should "create 1 VAF when give DI(1)" in {
 
-    val gsc = GSC(DataCommunications(DI(1)))
+    val gsc = GSC(SystemId(999), Version(1), DataCommunications(DI(1)))
 
     assert(gsc.dataCommunications.di.value === 1)
     assert(gsc.distributedDataProcessing.di.value === 0)
@@ -51,6 +51,8 @@ class GSCSpec extends FlatSpec {
   it should "create VAFs" in {
 
     val gsc = GSC(
+      SystemId(999),
+      Version(1),
       DataCommunications(DI(1)),
       DistributedDataProcessing(DI(2)),
       Performance(DI(3)),
@@ -88,6 +90,8 @@ class GSCSpec extends FlatSpec {
   "TDI" should "Summary DIs" in {
 
     val gsc = GSC(
+      SystemId(999),
+      Version(1),
       DataCommunications(DI(1)),
       DistributedDataProcessing(DI(2)),
       Performance(DI(3)),
@@ -109,18 +113,20 @@ class GSCSpec extends FlatSpec {
 
   it should "0 TDI when GSC has no General System Characteristics" in {
 
-    val gsc = GSC()
+    val gsc = GSC(SystemId(999), Version(1))
     assert(gsc.TDI.value === 0)
   }
 
   "VAF" should "0.65 VAF when GSC has no General System Characteristics" in {
-    val gsc = GSC()
+    val gsc = GSC(SystemId(999), Version(1))
     assert(gsc.VAF.value === 0.65)
   }
 
   it should "VAF when GSC has no General System Characteristics" in {
 
     val gsc = GSC(
+      SystemId(999),
+      Version(1),
       DataCommunications(DI(1)),
       DistributedDataProcessing(DI(2)),
       Performance(DI(3)),

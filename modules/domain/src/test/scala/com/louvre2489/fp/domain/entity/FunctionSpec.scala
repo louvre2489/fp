@@ -8,7 +8,7 @@ import org.scalatest.FlatSpec
 
 class FunctionSpec extends FlatSpec {
 
-  val system    = SystemInfo(SystemId(789), "SYS", GSC())
+  val system    = SystemInfo(SystemId(789), "SYS", GSC(SystemId(999), Version(1)))
   val subSystem = Some(SubSystemInfo(SubSystemId(123), "SUB", SystemId(456)))
 
   behavior of "Function"
@@ -18,6 +18,7 @@ class FunctionSpec extends FlatSpec {
     val function = Function(FunctionId("ID"),
                             "TEST_FUNC",
                             system,
+                            Version(1),
                             subSystem,
                             ADD,
                             DataMigrationFunction(false),
@@ -40,7 +41,7 @@ class FunctionSpec extends FlatSpec {
     val systemValue = function.systemInfo
     assert(systemValue.systemId.value === 789)
     assert(systemValue.systemName === "SYS")
-    assert(systemValue.gsc === GSC())
+    assert(systemValue.gsc === GSC(SystemId(999), Version(1)))
 
     val subSystemValue = function.subSystemInfo.get
     assert(subSystemValue.subSystemId.value === 123)
@@ -54,6 +55,7 @@ class FunctionSpec extends FlatSpec {
     val function = entity.Function(FunctionId("ID"),
                                    "TEST_FUNC",
                                    system,
+                                   Version(1),
                                    subSystem,
                                    ADD,
                                    DataMigrationFunction(false),
@@ -70,6 +72,7 @@ class FunctionSpec extends FlatSpec {
     val function = entity.Function(FunctionId("ID"),
                                    "TEST_FUNC",
                                    system,
+                                   Version(1),
                                    subSystem,
                                    ADD,
                                    DataMigrationFunction(false),
@@ -83,33 +86,39 @@ class FunctionSpec extends FlatSpec {
 
   "High ILF Data Function and High EI Transactional Function" must "21 function point" in {
 
-    val function = entity.Function(FunctionId("ID"),
-                                   "TEST_FUNC",
-                                   system,
-                                   subSystem,
-                                   ADD,
-                                   DataMigrationFunction(false),
-                                   ILF,
-                                   EI,
-                                   DET(Int.MaxValue),
-                                   RET(Int.MaxValue),
-                                   FTR(Int.MaxValue))
+    val function = entity.Function(
+      FunctionId("ID"),
+      "TEST_FUNC",
+      system,
+      Version(1),
+      subSystem,
+      ADD,
+      DataMigrationFunction(false),
+      ILF,
+      EI,
+      DET(Int.MaxValue),
+      RET(Int.MaxValue),
+      FTR(Int.MaxValue)
+    )
     assert(function.UFP.value === 21)
   }
 
   "High EIF Data Function and High EO Transactional Function" must "17 function point" in {
 
-    val function = entity.Function(FunctionId("ID"),
-                                   "TEST_FUNC",
-                                   system,
-                                   subSystem,
-                                   ADD,
-                                   DataMigrationFunction(false),
-                                   EIF,
-                                   EO,
-                                   DET(Int.MaxValue),
-                                   RET(Int.MaxValue),
-                                   FTR(Int.MaxValue))
+    val function = entity.Function(
+      FunctionId("ID"),
+      "TEST_FUNC",
+      system,
+      Version(1),
+      subSystem,
+      ADD,
+      DataMigrationFunction(false),
+      EIF,
+      EO,
+      DET(Int.MaxValue),
+      RET(Int.MaxValue),
+      FTR(Int.MaxValue)
+    )
     assert(function.UFP.value === 17)
   }
 }

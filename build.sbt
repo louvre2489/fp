@@ -19,7 +19,7 @@ lazy val infrastructure = (project in file("modules/infrastructure"))
   .settings(
     name := s"$baseName-infrastructure",
     mainClass in Compile := Some(
-      "com.louvre2489.fp.infrastructure.http.WebServer"),
+      "com.louvre2489.fp.http.WebServer"),
     libraryDependencies ++= Seq(
       Akka.akka_actor,
       Akka.akka_stream,

@@ -6,8 +6,12 @@ import akka.http.scaladsl.model.{ ContentTypes, HttpEntity, StatusCodes }
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{ ExceptionHandler, Route }
 import akka.util.Timeout
+import scalikejdbc.{ ConnectionPool, DB }
 
 import scala.util.control.NonFatal
+import com.louvre2489.fp.application.entity._
+import com.louvre2489.fp.domain.value.SystemId
+import com.louvre2489.fp.http.marshaller._
 
 /**
   * Routing Object
@@ -45,10 +49,46 @@ class Routes()(implicit system: ActorSystem, timeout: Timeout) extends SprayJson
         extractMethod { method =>
           log.info(s"call api. method: ${method.value}, uri: $uri")
 
+          // DB セットアップ
+          val conn            = ConnectionPool().borrow()
+          implicit val db: DB = DB(conn)
+
           pathPrefix("test") {
             pathEndOrSingleSlash {
               get {
                 complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Say hello to akka-http</h1>"))
+              }
+            }
+          } ~ path("systems") {
+            pathEndOrSingleSlash {
+              get {
+
+                implicit val systemListFormat = com.louvre2489.fp.http.marshaller.SystemJsonProtocol.systemListFormat
+
+                val data = new com.louvre2489.fp.application.query.QuerySystem(
+                  com.louvre2489.fp.rdb.repository.SystemDao()
+                ).findAll.map(s => System(s.systemId, s.systemName))
+
+                complete(data)
+              }
+            }
+          } ~ path("subSystems") {
+            pathEndOrSingleSlash {
+              get {
+                parameters('systemId) { systemId =>
+                  // TODO バリデーション
+
+                  implicit val subSystemListFormat =
+                    com.louvre2489.fp.http.marshaller.SubSystemJsonProtocol.subSystemListFormat
+
+                  val data = new com.louvre2489.fp.application.query.QuerySubSystem(
+                    com.louvre2489.fp.rdb.repository.SubSystemDao()
+                  ).findBySystemId(SystemId(systemId.toLong)).map(
+                      s => SubSystem(s.subSystemId, s.subSystemName, s.systemId)
+                    )
+
+                  complete(data)
+                }
               }
             }
           }

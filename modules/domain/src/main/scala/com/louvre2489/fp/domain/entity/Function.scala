@@ -29,6 +29,7 @@ object DEL extends DevelopmentType
   * @param functionId 機能ID
   * @param functionName 機能名
   * @param systemInfo システム情報
+  * @param version バージョン
   * @param subSystemInfo サブシステム情報(Optional)
   * @param developmentType 開発種類
   *                        ADD/CHGA/DEL
@@ -45,6 +46,7 @@ object DEL extends DevelopmentType
 case class Function(functionId: FunctionId,
                     functionName: String,
                     systemInfo: SystemInfo,
+                    version: Version,
                     subSystemInfo: Option[SubSystemInfo],
                     developmentType: DevelopmentType,
                     isDataMigrationFunction: DataMigrationFunction,

@@ -1,10 +1,15 @@
 package com.louvre2489.fp.rdb.db
 
-import scalikejdbc.{ ConnectionPool, DB }
+import scalikejdbc.DB
 
-trait BaseDao {
+trait BaseDaoObject {
 
-  private val conn = ConnectionPool(DBSettings.poolName).borrow()
+  def apply()(implicit db: DB): BaseDao
+}
 
-  val db: DB = DB(conn)
+abstract class BaseDao()(implicit db: DB) {
+
+//  private val conn = Conne//ctionPool(DBSettings.poolName).borrow()
+//
+//  val db: DB = DB(conn)
 }
