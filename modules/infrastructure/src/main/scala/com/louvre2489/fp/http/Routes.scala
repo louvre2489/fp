@@ -2,7 +2,7 @@ package com.louvre2489.fp.http
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import akka.http.scaladsl.model.{ ContentTypes, HttpEntity, StatusCodes }
+import akka.http.scaladsl.model.{ ContentTypes, StatusCodes }
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{ ExceptionHandler, Route }
 import akka.util.Timeout
@@ -11,7 +11,6 @@ import scalikejdbc.{ ConnectionPool, DB }
 import scala.util.control.NonFatal
 import com.louvre2489.fp.application.entity._
 import com.louvre2489.fp.domain.value.SystemId
-import com.louvre2489.fp.http.marshaller._
 
 /**
   * Routing Object
@@ -53,10 +52,18 @@ class Routes()(implicit system: ActorSystem, timeout: Timeout) extends SprayJson
           val conn            = ConnectionPool().borrow()
           implicit val db: DB = DB(conn)
 
-          pathPrefix("test") {
+          // frontendのルート
+          val frontendRootPath = "frontend"
+          val htmlFilePath     = frontendRootPath + "/src/html/"
+
+          path(frontendRootPath / Remaining) { resource =>
+            log.error(frontendRootPath + "/" + resource)
+            getFromResource(frontendRootPath + "/" + resource)
+          } ~
+          path("login") {
             pathEndOrSingleSlash {
               get {
-                complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Say hello to akka-http</h1>"))
+                getFromResource(htmlFilePath + "login.html")
               }
             }
           } ~ path("systems") {
