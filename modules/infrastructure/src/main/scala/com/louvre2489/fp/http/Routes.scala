@@ -53,14 +53,16 @@ class Routes()(implicit system: ActorSystem, timeout: Timeout) extends SprayJson
           implicit val db: DB = DB(conn)
 
           // frontendのルート
-          val frontendRootPath = "frontend"
-          val htmlFilePath     = frontendRootPath + "/src/html/"
+          val frontendRootPath = "fp-frontend"
+          val htmlFilePath     = frontendRootPath + "/public/html/"
 
           path(frontendRootPath / Remaining) { resource =>
-            log.error(frontendRootPath + "/" + resource)
-            getFromResource(frontendRootPath + "/" + resource)
-          } ~
-          path("login") {
+            pathEndOrSingleSlash {
+              get {
+                getFromResource(frontendRootPath + "/" + resource)
+              }
+            }
+          } ~ path("login") {
             pathEndOrSingleSlash {
               get {
                 getFromResource(htmlFilePath + "login.html")
