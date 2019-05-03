@@ -3,6 +3,16 @@ package com.louvre2489.fp
 package object http {
 
   /**
+    * サーバー証明証キーストア
+    */
+  val KEY_STORE = "https.keystore"
+
+  /**
+    * サーバー証明書パスワード
+    */
+  val KEY_STORE_PASS = "https.password"
+
+  /**
     *  ActorSystem Name
     */
   val ACTOR_SYSTEM_NAME = "actor.system.name"
@@ -16,4 +26,19 @@ package object http {
     * Configuration Parameter:port
     */
   val MY_PORT = "http.port"
+
+  /**
+    * リソースファイルパス
+    */
+  val RESOURCE_ROOT_PATH = "fp-frontend"
+
+  /**
+    * フロントエンドルート
+    */
+  val FRONTEND_ROOT_PATH = "public"
+
+  /**
+    * HTMLのパス
+    */
+  val HTML_FILE_PATH = RESOURCE_ROOT_PATH + "/" + FRONTEND_ROOT_PATH + "/html/"
 }

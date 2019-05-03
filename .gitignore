@@ -4,6 +4,7 @@
 *.log
 tmp
 dump
+*.p12
 
 # SBT
 dist
@@ -41,3 +42,6 @@ jspm_packages
  
 # Optional REPL history
 .node_repl_history
+
+# Elm
+elm-stuff

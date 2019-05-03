@@ -47,7 +47,7 @@ var common = {
       // 出力するファイル名
       filename: '[name]',
       // 出力先のパス（絶対パスを指定する必要がある）
-      path: path.join(__dirname, 'dist')
+      path: path.join(__dirname, 'public/js')
     },
 
     plugins: [
@@ -138,13 +138,7 @@ if (MODE === "development") {
             inline: true,
             stats: "errors-only",
             content: [path.join(__dirname, "src/assets")],
-          //            add: (app, middleware, options) => {
-          //                // routes /xyz -> /index.html
-          //                app.use(history());
-          //                // e.g.
-          //                // app.use(convert(proxy('/api', { target: 'http://localhost:5000' })));
-          //            },
-            // windowsとvirtual boxとdockerを組み合わせている場合、ファイルの変更の検知にポーリングが必要(webpack-serve時)
+
             devMiddleware: {
               watch:true,
               watchOptions:{
@@ -152,19 +146,8 @@ if (MODE === "development") {
                 poll:1000
               }
             },
-            hotClient:{
-              host: {
-                client: '192.168.50.10', // 仮想環境のIPアドレス
-                server: '0.0.0.0',       // Dockerのコンテナ上で動かすのでワイルドカードIPアドレスを指定
-              },
-              // hot-reloadで使われるポートを固定
-              port:{
-                server:3002,
-                client: 3002
-                }
-            },
-        },
-      // windowsとvirtual boxとdockerを組み合わせている場合、ファイルの変更の検知にポーリングが必要(webpack時)
+       },
+      //
       watch:true,
       watchOptions: {
         ignored: /node_modules/,
