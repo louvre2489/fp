@@ -80,6 +80,11 @@ class Routes()(implicit system: ActorSystem, timeout: Timeout) extends SprayJson
             pathEndOrSingleSlash {
               get {
                 getFromResource(HTML_FILE_PATH + "login.html")
+              } ~
+              post {
+                // TODO ログイン処理
+                log.error("POST!")
+                getFromResource(HTML_FILE_PATH + "login.html")
               }
             }
 
