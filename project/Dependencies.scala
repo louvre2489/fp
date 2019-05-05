@@ -1,5 +1,10 @@
 import sbt._
 
+object Config {
+  val version = "1.3.4"
+  val config  = "com.typesafe" % "config" % version
+}
+
 object ScalaTest {
   val version        = "3.0.5"
   val core: ModuleID = "org.scalatest" %% "scalatest" % version

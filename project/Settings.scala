@@ -34,8 +34,9 @@ object Settings {
 //      Resolver.bintrayRepo("danslapman", "maven")
 //    ),
     libraryDependencies ++= Seq(
-      ScalaTest.core % Test,
-      Logback.logback
+      Config.config,
+      Logback.logback,
+      ScalaTest.core % Test
     )
   )
 }

@@ -1,7 +1,13 @@
 package com.louvre2489.fp.domain
 
-import com.louvre2489.fp.domain.value.{ FunctionId, SubSystemId, SystemId, Version }
-import com.louvre2489.fp.repository.{ FunctionRepository, GSCRepository, SubSystemRepository, SystemRepository }
+import com.louvre2489.fp.domain.value.{ FunctionId, SubSystemId, SystemId, UserId, Version }
+import com.louvre2489.fp.repository.{
+  FunctionRepository,
+  GSCRepository,
+  SubSystemRepository,
+  SystemRepository,
+  UserRepository
+}
 
 package object entity {
 
@@ -12,10 +18,10 @@ package object entity {
       override def findAll: List[Function] = Nil
 
       @Override
-      def findById(id: FunctionId): Option[Function] = None
+      override def findById(id: FunctionId): Option[Function] = None
 
       @Override
-      def save(f: Function) = Right(Unit)
+      override def save(f: Function) = Right(Unit)
     }
 
   implicit val systemRepo: SystemRepository[SystemInfo, SystemId] =
@@ -25,10 +31,10 @@ package object entity {
       override def findAll: List[SystemInfo] = Nil
 
       @Override
-      def findById(id: SystemId): Option[SystemInfo] = None
+      override def findById(id: SystemId): Option[SystemInfo] = None
 
       @Override
-      def save(f: SystemInfo) = Right(Unit)
+      override def save(f: SystemInfo) = Right(Unit)
     }
 
   implicit val subSystemRepo: SubSystemRepository[SubSystemInfo, SubSystemId] =
@@ -38,20 +44,39 @@ package object entity {
       override def findAll: List[SubSystemInfo] = Nil
 
       @Override
-      def findById(id: SubSystemId): Option[SubSystemInfo] = None
+      override def findById(id: SubSystemId): Option[SubSystemInfo] = None
 
       @Override
       override def findBySystemId(systemId: SystemId): List[SubSystemInfo] = Nil
 
       @Override
-      def save(f: SubSystemInfo) = Right(Unit)
+      override def save(f: SubSystemInfo) = Right(Unit)
     }
 
   implicit val gscRepo: GSCRepository[GSC, SystemId] = new GSCRepository[GSC, SystemId] {
 
-    def find(id: SystemId, version: Version): Option[GSC] = None
+    @Override
+    override def find(id: SystemId, version: Version): Option[GSC] = None
 
     @Override
-    def save(f: GSC) = Right(Unit)
+    override def save(f: GSC) = Right(Unit)
   }
+
+  implicit val userRepo: UserRepository[UserInfo, UserId] = new UserRepository[UserInfo, UserId] {
+
+    @Override
+    override def findAll(): List[UserInfo] = Nil
+
+    @Override
+    override def findById(id: UserId): Option[UserInfo] = None
+
+    @Override
+    override def save(f: UserInfo) = Right(Unit)
+
+  }
+
+  /**
+    * パスワードハッシュ用ソルト
+    */
+  val SALT = "user.password.salt"
 }
