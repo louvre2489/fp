@@ -74,9 +74,4 @@ package object entity {
     override def save(f: UserInfo) = Right(Unit)
 
   }
-
-  /**
-    * パスワードハッシュ用ソルト
-    */
-  val SALT = "user.password.salt"
 }

@@ -10,21 +10,26 @@ class UserSpec extends FlatSpec {
 
   behavior of "User"
 
-  "User" can "パスワードハッシュ化" in {
+  "User" can "新規ユーザーの作成" in {
 
-    val userInfo = UserInfo(UserId("USE_ID"), "password", "USER_NAME", false)
+    val password = "password"
+    val userInfo = UserInfo(UserId("USE_ID"), password, "USER_NAME")
 
-    val pwHashedUserInfo = userInfo.hashPassword
+    assert(userInfo.isPasswordHashed === true)
+    assert(userInfo.password !== password)
+    assert(userInfo.hashedUserId.get !== userInfo.userId.value)
 
-    assert(pwHashedUserInfo.isPasswordHashed === true)
-    assert(pwHashedUserInfo.password !== userInfo.password)
+    assert(userInfo.password === UserInfo.sha256(password + userInfo.salt.get))
+    assert(
+      userInfo.hashedUserId.get === UserInfo.sha256(userInfo.salt.map(x => userInfo.userId.value + x).getOrElse(""))
+    )
   }
 
   it should "ハッシュ化済であればパスワードは変化しない" in {
 
-    val userInfo = UserInfo(UserId("USE_ID"), "password", "USER_NAME", true)
+    val userInfo = UserInfo(UserId("USE_ID"), "password", "USER_NAME", true, Some("hashedUserId"), Some("salt"))
 
-    val pwHashedUserInfo = userInfo.hashPassword
+    val pwHashedUserInfo = userInfo.setHashedPassword
 
     assert(pwHashedUserInfo.isPasswordHashed === true)
     assert(pwHashedUserInfo.password === userInfo.password)
@@ -32,7 +37,7 @@ class UserSpec extends FlatSpec {
 
   it should "ハッシュ化済でなければ保存時に例外が発生する" in {
 
-    val userInfo = UserInfo(UserId("USE_ID"), "password", "USER_NAME", false)
+    val userInfo = UserInfo(UserId("USE_ID"), "password", "USER_NAME", false, None, None)
 
     val result = userInfo.save
 
@@ -44,5 +49,21 @@ class UserSpec extends FlatSpec {
         assert(e.getMessage === "DE002:" + messageConf.getString("DE002"))
       }
     }
+  }
+
+  it should "パスワード変更" in {
+
+    val oldPass = "old"
+    val newPass = "new"
+
+    val userInfo = UserInfo(UserId("USE_ID"), oldPass, "USER_NAME")
+
+    val newUserInfo = userInfo.changePassword(newPass)
+
+    assert(userInfo.userId.value === newUserInfo.userId.value)
+    assert(userInfo.password !== newUserInfo.password)
+    assert(userInfo.salt !== newUserInfo.salt)
+    assert(newUserInfo.isPasswordHashed === true)
+
   }
 }

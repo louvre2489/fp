@@ -4,7 +4,10 @@ import scalikejdbc._
 
 case class User(
   userId: String,
-  password: String) {
+  password: String,
+  userName: String,
+  hashedUserId: String,
+  salt: String) {
 
   def save()(implicit session: DBSession = User.autoSession): User = User.save(this)(session)
 
@@ -17,12 +20,15 @@ object User extends SQLSyntaxSupport[User] {
 
   override val tableName = "M_USER"
 
-  override val columns = Seq("USER_ID", "PASSWORD")
+  override val columns = Seq("USER_ID", "PASSWORD", "USER_NAME", "HASHED_USER_ID", "SALT")
 
   def apply(mu: SyntaxProvider[User])(rs: WrappedResultSet): User = apply(mu.resultName)(rs)
   def apply(mu: ResultName[User])(rs: WrappedResultSet): User = new User(
     userId = rs.get(mu.userId),
-    password = rs.get(mu.password)
+    password = rs.get(mu.password),
+    userName = rs.get(mu.userName),
+    hashedUserId = rs.get(mu.hashedUserId),
+    salt = rs.get(mu.salt)
   )
 
   val mu = User.syntax("mu")
@@ -63,30 +69,48 @@ object User extends SQLSyntaxSupport[User] {
 
   def create(
     userId: String,
-    password: String)(implicit session: DBSession = autoSession): User = {
+    password: String,
+    userName: String,
+    hashedUserId: String,
+    salt: String)(implicit session: DBSession = autoSession): User = {
     withSQL {
       insert.into(User).namedValues(
         column.userId -> userId,
-        column.password -> password
+        column.password -> password,
+        column.userName -> userName,
+        column.hashedUserId -> hashedUserId,
+        column.salt -> salt
       )
     }.update.apply()
 
     User(
       userId = userId,
-      password = password)
+      password = password,
+      userName = userName,
+      hashedUserId = hashedUserId,
+      salt = salt)
   }
 
   def batchInsert(entities: collection.Seq[User])(implicit session: DBSession = autoSession): List[Int] = {
     val params: collection.Seq[Seq[(Symbol, Any)]] = entities.map(entity =>
       Seq(
         'userId -> entity.userId,
-        'password -> entity.password))
+        'password -> entity.password,
+        'userName -> entity.userName,
+        'hashedUserId -> entity.hashedUserId,
+        'salt -> entity.salt))
     SQL("""insert into M_USER(
       USER_ID,
-      PASSWORD
+      PASSWORD,
+      USER_NAME,
+      HASHED_USER_ID,
+      SALT
     ) values (
       {userId},
-      {password}
+      {password},
+      {userName},
+      {hashedUserId},
+      {salt}
     )""").batchByName(params: _*).apply[List]()
   }
 
@@ -94,7 +118,10 @@ object User extends SQLSyntaxSupport[User] {
     withSQL {
       update(User).set(
         column.userId -> entity.userId,
-        column.password -> entity.password
+        column.password -> entity.password,
+        column.userName -> entity.userName,
+        column.hashedUserId -> entity.hashedUserId,
+        column.salt -> entity.salt
       ).where.eq(column.userId, entity.userId)
     }.update.apply()
     entity

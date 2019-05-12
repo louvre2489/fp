@@ -4,9 +4,37 @@ import java.math.BigInteger
 import java.security.MessageDigest
 
 import com.louvre2489.fp.common.DomainException
-import com.typesafe.config._
 import com.louvre2489.fp.domain.value.{ MessageId, UserId }
 import com.louvre2489.fp.repository.UserRepository
+
+object UserInfo {
+
+  def apply(userId: UserId, password: String, userName: String)(
+      implicit repository: UserRepository[UserInfo, UserId]
+  ): UserInfo = {
+
+    val notHashedUserInfo = new UserInfo(userId, password, userName, false, None, None)
+
+    // パスワードのハッシュ化
+    val passwordHashedUserInfo = notHashedUserInfo.setHashedPassword
+
+    // ハッシュ化済UserIdの格納
+    passwordHashedUserInfo.setHashedUserId
+  }
+
+  /**
+    * SHA256ハッシュ化
+    * @param target ハッシュ化対象文字列
+    * @return SHA256ハッシュ文字列
+    */
+  def sha256(target: String): String = {
+
+    val digest =
+      MessageDigest.getInstance("SHA-256").digest(target.getBytes("UTF-8"))
+
+    String.format("%032x", new BigInteger(1, digest))
+  }
+}
 
 /**
   *  ユーザー情報を扱う
@@ -14,20 +42,41 @@ import com.louvre2489.fp.repository.UserRepository
   * @param password パスワード
   * @param userName ユーザー名
   * @param isPasswordHashed ハッシュ済の場合はtrue
+  * @param hashedUserId ハッシュ済ユーザーID
+  *                     未設定時はnullを設定するが、nullのままでは保存不可
+  * @param salt ソルト
   * @param repository userRepository
   */
-case class UserInfo(userId: UserId, password: String, userName: String, isPasswordHashed: Boolean = false)(
+case class UserInfo(userId: UserId,
+                    password: String,
+                    userName: String,
+                    isPasswordHashed: Boolean,
+                    hashedUserId: Option[String],
+                    salt: Option[String])(
     implicit repository: UserRepository[UserInfo, UserId]
 ) extends Entity[UserId] {
+
+  require(userId != null)
+
+  require(password != null)
+
+  require(userName != null)
 
   @Override
   def save: Either[Exception, Unit] = {
 
-    if (isPasswordHashed)
+    if (isPasswordHashed && hashedUserId.isInstanceOf[Some[_]] && salt.isInstanceOf[Some[_]])
       repository.save(this)
     else
       // ハッシュ化未実施
       Left(DomainException(MessageId("DE002")))
+  }
+
+  def changePassword(newPassword: String): UserInfo = {
+
+    val newUserInfo = this.copy(password = newPassword, isPasswordHashed = false)
+
+    newUserInfo.setHashedPassword
   }
 
   /**
@@ -35,22 +84,46 @@ case class UserInfo(userId: UserId, password: String, userName: String, isPasswo
     * ハッシュ化済の場合は値の変更は発生しない
     * @return `UserInfo`
     */
-  def hashPassword: UserInfo = {
+  def setHashedPassword: UserInfo = {
 
-    def sha256Password: String = {
+    /**
+      * `USerInfo`に設定されている`UserId`から`salt`を生成し、
+      * それを元にパスワードをハッシュ化する
+      * 既にハッシュ化済の場合は、設定済の値を返す
+      * @return `(ハッシュ化済パスワード, salt)`
+      */
+    def sha256Password: (String, Option[String]) = {
 
-      if (isPasswordHashed)
-        this.password
+      if (this.isPasswordHashed)
+        (this.password, this.salt)
       else {
 
-        val conf = ConfigFactory.load
+        val salt = this.createSalt
 
-        val digest =
-          MessageDigest.getInstance("SHA-256").digest((password.concat(conf.getString(SALT)).getBytes("UTF-8")))
-        String.format("%032x", new BigInteger(1, digest))
+        (UserInfo.sha256(password.concat(salt)), Some(salt))
       }
     }
 
-    this.copy(password = sha256Password, isPasswordHashed = true)
+    val (hashedPassword, salt) = sha256Password
+
+    this.copy(password = hashedPassword, isPasswordHashed = true, salt = salt)
+  }
+
+  /**
+    * パスワードを元にソルトを生成する
+    * @return ソルト
+    */
+  private def createSalt: String = UserInfo.sha256(this.password)
+
+  /**
+    * セットされているパスワードをハッシュ化した`UserInfo`を返す。
+    * ハッシュ化済の場合は値の変更は発生しない
+    * @return `UserInfo`
+    */
+  private def setHashedUserId: UserInfo = {
+
+    val hashedUserId = UserInfo.sha256(this.userId.value.concat(this.salt.getOrElse("")))
+
+    this.copy(hashedUserId = Some(hashedUserId))
   }
 }
