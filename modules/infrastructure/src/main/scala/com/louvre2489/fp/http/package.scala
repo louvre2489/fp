@@ -28,6 +28,11 @@ package object http {
   val MY_PORT = "http.port"
 
   /**
+    * JWTアクセストークン
+    */
+  val ACCESS_TOKEN = "jwt.access-token"
+
+  /**
     * リソースファイルパス
     */
   val RESOURCE_ROOT_PATH = "fp-frontend"

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>共通のレイアウト</title>
+    <link rel="stylesheet" href="/public/css/vender/bulma-0.7.4/css/bulma.min.css">
+    <link rel="stylesheet" href="/public/css/fp/fp.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  </head>
+  <body>
+    <header class="nav">
+      <div class="hero is-info">
+         <div id="fp-hero" class="hero-body">
+             <div class="container">
+                <h1 class="title">Function Point 計算機</h1>
+             </div>
+         </div>
+      </div>
+    </header>
+    <main class="columns">
+      <div class="submenu column is-3">
+        <br/>
+        <aside class="box fp-menu">
+          <p class="menu-label">
+            ファンクションポイント計算
+          </p>
+          <ul class="menu-list">
+            <li><a class="is-active" href="#">ファンクションポイント計算</a></li>
+            <li><a href="#">システム情報登録</a></li>
+          </ul>
+          <p class="menu-label">
+            マスタ
+          </p>
+          <ul class="menu-list">
+            <li><a href="#">ユーザー設定</a></li>
+          </ul>
+        </aside>
+      </div>
+      <div class="column">
+        <br/>
+        <aside class="box fp-system-title">
+          〇〇システム ver1.2
+        </aside>
+        <aside class="box fp-content-main">
+          <div id="fp-content"></div>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

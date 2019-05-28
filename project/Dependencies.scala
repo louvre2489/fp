@@ -30,6 +30,11 @@ object Spray {
   val spray   = "io.spray" %% "spray-json" % version
 }
 
+object Jwt {
+  val version = "2.1.0"
+  val jwt     = "com.pauldijou" %% "jwt-spray-json" % version
+}
+
 object ScalikeJdbc {
   val version           = "3.3.2"
   val scalikeJdbc       = "org.scalikejdbc" %% "scalikejdbc" % version

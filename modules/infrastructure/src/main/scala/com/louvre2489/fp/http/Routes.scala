@@ -2,16 +2,20 @@ package com.louvre2489.fp.http
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import akka.http.scaladsl.model.{ ContentTypes, StatusCodes }
+import akka.http.scaladsl.model.headers.RawHeader
+import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.{ Directive, ExceptionHandler, Route }
+import akka.http.scaladsl.server.{ ExceptionHandler, Route }
 import akka.util.Timeout
 import scalikejdbc.{ ConnectionPool, DB }
 
 import scala.util.control.NonFatal
 import com.louvre2489.fp.application.entity._
+import com.louvre2489.fp.application.usecase.LoginUser
 import com.louvre2489.fp.domain.value.SystemId
-import javax.swing.text.html.HTML
+import com.louvre2489.fp.rdb.repository.UserDao
+import com.typesafe.config.{ Config, ConfigFactory }
+import spray.json.RootJsonFormat
 
 /**
   * Routing Object
@@ -27,6 +31,8 @@ object Routes {
   */
 class Routes()(implicit system: ActorSystem, timeout: Timeout) extends SprayJsonSupport {
 
+  private val conf: Config = ConfigFactory.load
+
   /***
     * Custom Error Handler
     */
@@ -39,6 +45,9 @@ class Routes()(implicit system: ActorSystem, timeout: Timeout) extends SprayJson
         }
       }
   }
+
+  implicit val userCertificationFormat: RootJsonFormat[UserCertification] =
+    com.louvre2489.fp.http.marshaller.UserCertificationJsonProtocol.userCertificationFormat
 
   /***
     * Routing
@@ -57,8 +66,8 @@ class Routes()(implicit system: ActorSystem, timeout: Timeout) extends SprayJson
 
           /**
             * ローンパターンでアプリケーションを実行
-            * @param db
-            * @param application
+            * @param db DB接続情報
+            * @param application アプリケーション処理
             * @return
             */
           def using(db: DB)(application: DB => Route): Route = {
@@ -82,9 +91,29 @@ class Routes()(implicit system: ActorSystem, timeout: Timeout) extends SprayJson
                 getFromResource(HTML_FILE_PATH + "login.html")
               } ~
               post {
-                // TODO ログイン処理
-                log.error("POST!")
-                getFromResource(HTML_FILE_PATH + "login.html")
+                entity(as[UserCertification]) { user =>
+                  using(borrow) { implicit db =>
+                    implicit val userDao: UserDao = new UserDao()
+
+                    val loginUser = new LoginUser
+
+                    val loginUserInfo = loginUser.login(user)
+
+                    val hashedUserId = loginUserInfo.hashedUserId
+
+                    loginUserInfo.userCert match {
+                      case success if success.isLoginSuccess => {
+                        respondWithHeader(RawHeader(conf.getString(ACCESS_TOKEN), Jwt.createToken(hashedUserId))) {
+                          complete(success)
+                        }
+                      }
+                      case fail => {
+                        log.error(s"login error:${user.userId}")
+                        complete(fail)
+                      }
+                    }
+                  }
+                }
               }
             }
 

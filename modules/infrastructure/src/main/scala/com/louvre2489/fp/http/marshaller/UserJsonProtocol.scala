@@ -66,21 +66,29 @@ object UserCertificationJsonProtocol extends DefaultJsonProtocol {
 
   val PASS = "password"
 
+  val RESULT = "isLoginSuccess"
+
   /**
     * ユーザー認証用マーシャラー
     */
   implicit val userCertificationFormat: RootJsonFormat[UserCertification] = new RootJsonFormat[UserCertification] {
 
     override def read(json: JsValue): UserCertification =
-      json.asJsObject.getFields(USER_ID, PASS) match {
-        case Seq(JsString(userId), JsString(password)) =>
-          UserCertification(UserId(userId), password)
+      json.asJsObject.getFields(USER_ID, PASS, RESULT) match {
+        case Seq(JsString(userId), JsString(password), JsBoolean(_)) =>
+          if (password == null || password.isEmpty)
+            // パスワード未設定時は`None`
+            UserCertification(UserId(userId), None, false)
+          else
+            // パスワード入力時は`Some`で包む
+            UserCertification(UserId(userId), Some(password), false)
         case _ => throw DeserializationException(TARGET_NAME)
       }
 
     override def write(obj: UserCertification): JsObject = JsObject(
       USER_ID -> JsString(obj.userId.value),
-      PASS    -> JsString(obj.password)
+      PASS    -> JsString(obj.password.getOrElse("")),
+      RESULT  -> JsBoolean(obj.isLoginSuccess)
     )
   }
 }

@@ -2,19 +2,13 @@ package com.louvre2489.fp.rdb.models
 
 import scalikejdbc._
 
-case class User(
-  userId: String,
-  password: String,
-  userName: String,
-  hashedUserId: String,
-  salt: String) {
+case class User(userId: String, password: String, userName: String, hashedUserId: String, salt: String) {
 
   def save()(implicit session: DBSession = User.autoSession): User = User.save(this)(session)
 
   def destroy()(implicit session: DBSession = User.autoSession): Int = User.destroy(this)(session)
 
 }
-
 
 object User extends SQLSyntaxSupport[User] {
 
@@ -67,38 +61,32 @@ object User extends SQLSyntaxSupport[User] {
     }.map(_.long(1)).single.apply().get
   }
 
-  def create(
-    userId: String,
-    password: String,
-    userName: String,
-    hashedUserId: String,
-    salt: String)(implicit session: DBSession = autoSession): User = {
+  def create(userId: String, password: String, userName: String, hashedUserId: String, salt: String)(
+      implicit session: DBSession = autoSession
+  ): User = {
     withSQL {
-      insert.into(User).namedValues(
-        column.userId -> userId,
-        column.password -> password,
-        column.userName -> userName,
-        column.hashedUserId -> hashedUserId,
-        column.salt -> salt
-      )
+      insert
+        .into(User).namedValues(
+          column.userId       -> userId,
+          column.password     -> password,
+          column.userName     -> userName,
+          column.hashedUserId -> hashedUserId,
+          column.salt         -> salt
+        )
     }.update.apply()
 
-    User(
-      userId = userId,
-      password = password,
-      userName = userName,
-      hashedUserId = hashedUserId,
-      salt = salt)
+    User(userId = userId, password = password, userName = userName, hashedUserId = hashedUserId, salt = salt)
   }
 
   def batchInsert(entities: collection.Seq[User])(implicit session: DBSession = autoSession): List[Int] = {
-    val params: collection.Seq[Seq[(Symbol, Any)]] = entities.map(entity =>
-      Seq(
-        'userId -> entity.userId,
-        'password -> entity.password,
-        'userName -> entity.userName,
-        'hashedUserId -> entity.hashedUserId,
-        'salt -> entity.salt))
+    val params: collection.Seq[Seq[(Symbol, Any)]] = entities.map(
+      entity =>
+        Seq('userId       -> entity.userId,
+            'password     -> entity.password,
+            'userName     -> entity.userName,
+            'hashedUserId -> entity.hashedUserId,
+            'salt         -> entity.salt)
+    )
     SQL("""insert into M_USER(
       USER_ID,
       PASSWORD,
@@ -116,13 +104,14 @@ object User extends SQLSyntaxSupport[User] {
 
   def save(entity: User)(implicit session: DBSession = autoSession): User = {
     withSQL {
-      update(User).set(
-        column.userId -> entity.userId,
-        column.password -> entity.password,
-        column.userName -> entity.userName,
-        column.hashedUserId -> entity.hashedUserId,
-        column.salt -> entity.salt
-      ).where.eq(column.userId, entity.userId)
+      update(User)
+        .set(
+          column.userId       -> entity.userId,
+          column.password     -> entity.password,
+          column.userName     -> entity.userName,
+          column.hashedUserId -> entity.hashedUserId,
+          column.salt         -> entity.salt
+        ).where.eq(column.userId, entity.userId)
     }.update.apply()
     entity
   }

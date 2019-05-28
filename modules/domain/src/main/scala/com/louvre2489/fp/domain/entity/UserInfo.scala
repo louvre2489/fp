@@ -40,11 +40,14 @@ object UserInfo {
   *  ユーザー情報を扱う
   * @param userId ユーザーID
   * @param password パスワード
+  *                 平文パスワード+`salt`でハッシュ化した文字列
   * @param userName ユーザー名
   * @param isPasswordHashed ハッシュ済の場合はtrue
   * @param hashedUserId ハッシュ済ユーザーID
+  *                     ユーザーID+`salt`でハッシュ化した文字列
   *                     未設定時はnullを設定するが、nullのままでは保存不可
   * @param salt ソルト
+  *             平文パスワードをSHA256でハッシュ化した文字列
   * @param repository userRepository
   */
 case class UserInfo(userId: UserId,
@@ -72,6 +75,12 @@ case class UserInfo(userId: UserId,
       Left(DomainException(MessageId("DE002")))
   }
 
+  /**
+    * パスワード変更を行う
+    * `password`に設定された内容を平文パスワードとし、SHA256ハッシュ化を行った新しいオブジェクトを作成する
+    * @param newPassword 新パスワード(平文)
+    * @return 新しいパスワードをハッシュ化して設定した新しい`UserInfo`
+    */
   def changePassword(newPassword: String): UserInfo = {
 
     val newUserInfo = this.copy(password = newPassword, isPasswordHashed = false)
@@ -86,28 +95,31 @@ case class UserInfo(userId: UserId,
     */
   def setHashedPassword: UserInfo = {
 
-    /**
-      * `USerInfo`に設定されている`UserId`から`salt`を生成し、
-      * それを元にパスワードをハッシュ化する
-      * 既にハッシュ化済の場合は、設定済の値を返す
-      * @return `(ハッシュ化済パスワード, salt)`
-      */
-    def sha256Password: (String, Option[String]) = {
-
-      if (this.isPasswordHashed)
-        (this.password, this.salt)
-      else {
-
-        val salt = this.createSalt
-
-        (UserInfo.sha256(password.concat(salt)), Some(salt))
-      }
-    }
-
     val (hashedPassword, salt) = sha256Password
 
     this.copy(password = hashedPassword, isPasswordHashed = true, salt = salt)
   }
+
+  /**
+    * `USerInfo`に設定されている`UserId`から`salt`を生成し、
+    * それを元にパスワードをハッシュ化する
+    * 既にハッシュ化済の場合は、設定済の値を返す
+    * @return `(ハッシュ化済パスワード, salt)`
+    */
+  private def sha256Password: (String, Option[String]) = {
+
+    if (this.isPasswordHashed)
+      (this.password, this.salt)
+    else {
+
+      val salt = this.createSalt
+
+      (this.createHashedPassword(this.password, salt), Some(salt))
+    }
+  }
+
+  private def createHashedPassword(plainPassword: String, salt: String): String =
+    UserInfo.sha256(plainPassword.concat(salt))
 
   /**
     * パスワードを元にソルトを生成する
@@ -126,4 +138,12 @@ case class UserInfo(userId: UserId,
 
     this.copy(hashedUserId = Some(hashedUserId))
   }
+
+  /**
+    * 平文のパスワードを受けて、ハッシュ化済パスワードとの照合を行う
+    * @param plainPassword 平文のパスワード
+    * @return `true`：パスワード一致 `false`：パスワード不一致
+    */
+  def isCorrectPassword(plainPassword: String): Boolean =
+    this.createHashedPassword(plainPassword, this.salt.getOrElse("")) == this.password
 }

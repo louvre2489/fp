@@ -29,6 +29,7 @@ lazy val infrastructure = (project in file("modules/infrastructure"))
       AkkaHttp.akka_http_spray_json,
       AkkaHttp.akka_http_testkit % Test,
       Spray.spray,
+      Jwt.jwt,
       ScalikeJdbc.scalikeJdbc,
       ScalikeJdbc.scalikeJdbcConfig,
       ScalikeJdbc.scalikeJdbcTest,

@@ -47,7 +47,7 @@ object WebServer {
       Http().bindAndHandle(Routes().routes, host, port, connectionContext = createHttpsConnectionContext())
 
     // message for console
-    println(s"Server online at https://$host/$port/\nPress RETURN to stop...")
+    println(s"Server online at https://$host:$port/\nPress RETURN to stop...")
 
     StdIn.readLine() // let it run until user presses return
 

@@ -1,25 +1,35 @@
 module Login exposing (Model, Msg(..), OperationState(..), main, update)
 
 import Browser
+import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as D exposing (Decoder)
 import Json.Encode as E
+import Url
 
 
 main : Program () Model Msg
 main =
-    Browser.element
+    Browser.application
         { init = init
         , view = view
         , update = update
         , subscriptions = \_ -> Sub.none
+        , onUrlChange = UrlChanged
+        , onUrlRequest = UrlRequest
         }
 
 
 
+--    Browser.element
+--        { init = init
+--        , view = view
+--        , update = update
+--        , subscriptions = \_ -> Sub.none
+--        }
 -- Model
 
 
@@ -27,6 +37,8 @@ type alias Model =
     { userId : String
     , password : String
     , operationState : OperationState
+    , key : Nav.Key
+    , url : Url.Url
     }
 
 
@@ -40,17 +52,31 @@ type OperationState
 type alias LoginUser =
     { userId : String
     , password : String
+    , isLoginSuccess : Bool
     }
 
 
-init : () -> ( Model, Cmd Msg )
-init _ =
+init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init flags url key =
     ( { userId = ""
       , password = ""
       , operationState = Init
+      , key = key
+      , url = url
       }
     , Cmd.none
     )
+
+
+
+--init : () -> ( Model, Cmd Msg )
+--init _ =
+--    ( { userId = ""
+--      , password = ""
+--      , operationState = Init
+--      }
+--    , Cmd.none
+--    )
 
 
 type Msg
@@ -59,6 +85,8 @@ type Msg
     | Login
     | Send
     | Receive (Result Http.Error LoginUser)
+    | UrlChanged Url.Url
+    | UrlRequest Browser.UrlRequest
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -80,7 +108,6 @@ update msg model =
             )
 
         Send ->
-            -- TODO Submit
             ( { model | password = "", operationState = Waiting }
             , Http.post
                 { url = "/login"
@@ -90,71 +117,91 @@ update msg model =
             )
 
         Receive (Ok user) ->
-            ( { model | operationState = Loaded user }, Cmd.none )
+            --( { model | operationState = Loaded user }, Cmd.none )
+            ( { model | operationState = Loaded user }, Nav.load "/dashboard" )
 
         Receive (Err e) ->
             ( { model | operationState = Failed e }, Cmd.none )
 
+        UrlRequest urlRequest ->
+            case urlRequest of
+                Browser.Internal url ->
+                    ( model, Nav.pushUrl model.key (Url.toString url) )
 
-view : Model -> Html Msg
+                Browser.External href ->
+                    ( model, Nav.load href )
+
+        UrlChanged url ->
+            ( { model | url = url }, Cmd.none )
+
+
+
+-- view : Model -> Html Msg
+
+
+view : Model -> Browser.Document Msg
 view model =
-    Html.form
-        []
-        [ section
-            [ class "section" ]
-            [ div
-                [ class "container" ]
+    { title = "FP ログイン"
+    , body =
+        [ Html.form
+            []
+            [ section
+                [ class "section" ]
                 [ div
-                    [ class "column is-one-third" ]
-                    [ h1
-                        [ class "title" ]
-                        [ figure
-                            [ class "image is-128x128" ]
-                            [ img
-                                [ class "is-rounded", src "/public/image/login.png" ]
-                                []
+                    [ class "container" ]
+                    [ div
+                        [ class "column is-one-third" ]
+                        [ h1
+                            [ class "title" ]
+                            [ figure
+                                [ class "image is-128x128" ]
+                                [ img
+                                    [ class "is-rounded", src "/public/image/login.png" ]
+                                    []
+                                ]
+                            , p
+                                [ style "font-size" "2rem" ]
+                                [ text "〜画像は変える〜" ]
                             ]
-                        , p
-                            [ style "font-size" "2rem" ]
-                            [ text "〜画像は変える〜" ]
-                        ]
-                    , div
-                        [ class "field" ]
-                        [ div
-                            [ class "control" ]
-                            [ label
-                                [ class "label" ]
-                                [ text "ユーザーID" ]
-                            , input
-                                [ class "input", type_ "text", placeholder "ユーザーID", value model.userId, onInput InputUserId ]
-                                []
+                        , div
+                            [ class "field" ]
+                            [ div
+                                [ class "control" ]
+                                [ label
+                                    [ class "label" ]
+                                    [ text "ユーザーID" ]
+                                , input
+                                    [ class "input", type_ "text", placeholder "ユーザーID", value model.userId, onInput InputUserId ]
+                                    []
+                                ]
                             ]
-                        ]
-                    , div
-                        [ class "field" ]
-                        [ div
-                            [ class "control" ]
-                            [ label
-                                [ class "label" ]
-                                [ text "パスワード" ]
-                            , input
-                                [ class "input", type_ "text", placeholder "パスワード", value model.password, onInput InputPassword ]
-                                []
+                        , div
+                            [ class "field" ]
+                            [ div
+                                [ class "control" ]
+                                [ label
+                                    [ class "label" ]
+                                    [ text "パスワード" ]
+                                , input
+                                    [ class "input", type_ "text", placeholder "パスワード", value model.password, onInput InputPassword ]
+                                    []
+                                ]
                             ]
-                        ]
-                    , div
-                        [ class "field" ]
-                        [ div
-                            [ class "control" ]
-                            [ button
-                                [ class "button is-primary", type_ "button", onClick Login ]
-                                [ text "ログイン" ]
+                        , div
+                            [ class "field" ]
+                            [ div
+                                [ class "control" ]
+                                [ button
+                                    [ class "button is-primary", type_ "button", onClick Login ]
+                                    [ text "ログイン" ]
+                                ]
                             ]
                         ]
                     ]
                 ]
             ]
         ]
+    }
 
 
 
@@ -165,6 +212,7 @@ createLoginUser : Model -> LoginUser
 createLoginUser m =
     { userId = m.userId
     , password = m.password
+    , isLoginSuccess = False
     }
 
 
@@ -173,11 +221,13 @@ loginEncode u =
     E.object
         [ ( "userId", E.string u.userId )
         , ( "password", E.string u.password )
+        , ( "isLoginSuccess", E.bool u.isLoginSuccess )
         ]
 
 
 loginDecoder : Decoder LoginUser
 loginDecoder =
-    D.map2 LoginUser
+    D.map3 LoginUser
         (D.field "userId" D.string)
         (D.field "password" D.string)
+        (D.field "isLoginSuccess" D.bool)
