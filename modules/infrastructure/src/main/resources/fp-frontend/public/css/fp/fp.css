@@ -14,9 +14,13 @@ body {
   padding-bottom: 1rem;
 }
 
+#fp-hero_title {
+  margin-left: 0rem;
+}
+
 /* メニュー */
 .fp-menu {
-  margin-left:1rem;
+  margin-left: 1rem;
 }
 
 /* システム名 */

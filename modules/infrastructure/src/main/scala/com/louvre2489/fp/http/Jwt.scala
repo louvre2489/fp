@@ -15,7 +15,7 @@ object Jwt {
   /**
     * アルゴリズム
     */
-  val algorithm = JwtAlgorithm.RS256
+  val algorithm = JwtAlgorithm.HS256
 
   def createToken(hashedUserId: Option[String]): String = {
 

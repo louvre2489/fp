@@ -4,8 +4,11 @@ import com.louvre2489.fp.application.entity.{ User, UserCertification }
 import com.louvre2489.fp.domain.entity.UserInfo
 import com.louvre2489.fp.domain.value.UserId
 import com.louvre2489.fp.repository.UserRepository
+import org.slf4j.LoggerFactory
 
 class LoginUser(implicit userRepository: UserRepository[UserInfo, UserId]) {
+
+  val logger = LoggerFactory.getLogger(this.getClass)
 
   def login(user: UserCertification): LoginUserInfo = {
 
@@ -19,11 +22,15 @@ class LoginUser(implicit userRepository: UserRepository[UserInfo, UserId]) {
 
         val password = user.password.getOrElse("")
 
-        if (loginUser.isCorrectPassword(password))
-          LoginUserInfo(loginFail(userId), None)
-        else
+        logger.debug(userId.value)
+        logger.debug(password)
+
+        if (loginUser.isCorrectPassword(password)) {
           // ログイン成功時は、JWT用にハッシュ化されたユーザーIDを返す
+          logger.debug("ログイン成功：" + userId.value)
           LoginUserInfo(loginSuccess(userId), loginUser.hashedUserId)
+        } else
+          LoginUserInfo(loginFail(userId), None)
       }
     }
   }

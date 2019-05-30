@@ -36,6 +36,7 @@ main =
 type alias Model =
     { userId : String
     , password : String
+    , message : String
     , operationState : OperationState
     , key : Nav.Key
     , url : Url.Url
@@ -60,23 +61,13 @@ init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     ( { userId = ""
       , password = ""
+      , message = ""
       , operationState = Init
       , key = key
       , url = url
       }
     , Cmd.none
     )
-
-
-
---init : () -> ( Model, Cmd Msg )
---init _ =
---    ( { userId = ""
---      , password = ""
---      , operationState = Init
---      }
---    , Cmd.none
---    )
 
 
 type Msg
@@ -99,7 +90,7 @@ update msg model =
             ( { model | password = password }, Cmd.none )
 
         Login ->
-            ( { model | password = "", operationState = Waiting }
+            ( { model | password = "", message = "", operationState = Waiting }
             , Http.post
                 { url = "/login"
                 , body = Http.jsonBody <| loginEncode <| createLoginUser model
@@ -117,11 +108,15 @@ update msg model =
             )
 
         Receive (Ok user) ->
-            --( { model | operationState = Loaded user }, Cmd.none )
-            ( { model | operationState = Loaded user }, Nav.load "/dashboard" )
+            case user.isLoginSuccess of
+                True ->
+                    ( { model | operationState = Loaded user }, Nav.load "/dashboard" )
+
+                False ->
+                    ( { model | message = "ログインに失敗しました。", operationState = Loaded user }, Cmd.none )
 
         Receive (Err e) ->
-            ( { model | operationState = Failed e }, Cmd.none )
+            ( { model | message = "ログインに失敗しました。", operationState = Failed e }, Cmd.none )
 
         UrlRequest urlRequest ->
             case urlRequest of
@@ -195,6 +190,9 @@ view model =
                                     [ class "button is-primary", type_ "button", onClick Login ]
                                     [ text "ログイン" ]
                                 ]
+                            , p
+                                [ class "has-text-danger" ]
+                                [ text model.message ]
                             ]
                         ]
                     ]
