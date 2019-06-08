@@ -10,7 +10,10 @@ lazy val domain = (project in file("modules/domain"))
 
 lazy val application = (project in file("modules/application"))
   .settings(
-    name := s"$baseName-application"
+    name := s"$baseName-application",
+    libraryDependencies ++= Seq(
+      Jwt.jwt
+    ),
   )
   .settings(coreSettings)
   .dependsOn(domain)
@@ -29,7 +32,6 @@ lazy val infrastructure = (project in file("modules/infrastructure"))
       AkkaHttp.akka_http_spray_json,
       AkkaHttp.akka_http_testkit % Test,
       Spray.spray,
-      Jwt.jwt,
       ScalikeJdbc.scalikeJdbc,
       ScalikeJdbc.scalikeJdbcConfig,
       ScalikeJdbc.scalikeJdbcTest,

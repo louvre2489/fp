@@ -1,4 +1,4 @@
-module Login exposing (Model, Msg(..), OperationState(..), main, update)
+port module Login exposing (LoginUser, Model, Msg(..), OperationState(..), createLoginUser, init, loginDecoder, loginEncode, main, portSetLocalStorage, update, view)
 
 import Browser
 import Browser.Navigation as Nav
@@ -11,6 +11,9 @@ import Json.Encode as E
 import Url
 
 
+port portSetLocalStorage : String -> Cmd msg
+
+
 main : Program () Model Msg
 main =
     Browser.application
@@ -21,16 +24,6 @@ main =
         , onUrlChange = UrlChanged
         , onUrlRequest = UrlRequest
         }
-
-
-
---    Browser.element
---        { init = init
---        , view = view
---        , update = update
---        , subscriptions = \_ -> Sub.none
---        }
--- Model
 
 
 type alias Model =
@@ -54,6 +47,7 @@ type alias LoginUser =
     { userId : String
     , password : String
     , isLoginSuccess : Bool
+    , token : String
     }
 
 
@@ -110,7 +104,7 @@ update msg model =
         Receive (Ok user) ->
             case user.isLoginSuccess of
                 True ->
-                    ( { model | operationState = Loaded user }, Nav.load "/dashboard" )
+                    ( { model | operationState = Loaded user }, Cmd.batch [ portSetLocalStorage user.token, Nav.load "/menu" ] )
 
                 False ->
                     ( { model | message = "ログインに失敗しました。", operationState = Loaded user }, Cmd.none )
@@ -178,7 +172,7 @@ view model =
                                     [ class "label" ]
                                     [ text "パスワード" ]
                                 , input
-                                    [ class "input", type_ "text", placeholder "パスワード", value model.password, onInput InputPassword ]
+                                    [ class "input", type_ "password", placeholder "パスワード", value model.password, onInput InputPassword ]
                                     []
                                 ]
                             ]
@@ -211,6 +205,7 @@ createLoginUser m =
     { userId = m.userId
     , password = m.password
     , isLoginSuccess = False
+    , token = ""
     }
 
 
@@ -220,12 +215,14 @@ loginEncode u =
         [ ( "userId", E.string u.userId )
         , ( "password", E.string u.password )
         , ( "isLoginSuccess", E.bool u.isLoginSuccess )
+        , ( "token", E.string u.token )
         ]
 
 
 loginDecoder : Decoder LoginUser
 loginDecoder =
-    D.map3 LoginUser
+    D.map4 LoginUser
         (D.field "userId" D.string)
         (D.field "password" D.string)
         (D.field "isLoginSuccess" D.bool)
+        (D.field "token" D.string)

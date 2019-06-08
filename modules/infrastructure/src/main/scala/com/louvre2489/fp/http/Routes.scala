@@ -2,7 +2,6 @@ package com.louvre2489.fp.http
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import akka.http.scaladsl.model.headers.RawHeader
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{ ExceptionHandler, Route }
@@ -99,13 +98,9 @@ class Routes()(implicit system: ActorSystem, timeout: Timeout) extends SprayJson
 
                     val loginUserInfo = loginUser.login(user)
 
-                    val hashedUserId = loginUserInfo.hashedUserId
-
                     loginUserInfo.userCert match {
                       case success if success.isLoginSuccess => {
-                        respondWithHeader(RawHeader(conf.getString(ACCESS_TOKEN), Jwt.createToken(hashedUserId))) {
-                          complete(success)
-                        }
+                        complete(success)
                       }
                       case fail => {
                         log.error(s"login error:${user.userId}")
@@ -116,7 +111,7 @@ class Routes()(implicit system: ActorSystem, timeout: Timeout) extends SprayJson
                 }
               }
             }
-          } ~ path("dashboard") {
+          } ~ path("menu") {
             pathEndOrSingleSlash {
               get {
                 using(borrow) { implicit db =>
