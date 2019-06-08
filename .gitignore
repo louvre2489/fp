@@ -5,6 +5,7 @@
 tmp
 dump
 *.p12
+tags
 
 # SBT
 dist
