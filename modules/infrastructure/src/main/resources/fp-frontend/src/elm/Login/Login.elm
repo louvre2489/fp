@@ -1,4 +1,4 @@
-port module Login exposing (LoginUser, Model, Msg(..), OperationState(..), createLoginUser, init, loginDecoder, loginEncode, main, portSetLocalStorage, update, view)
+port module Login.Login exposing (LoginUser, Model, Msg(..), OperationState(..), createLoginUser, init, loginDecoder, loginEncode, main, portSetLocalStorage, update, view)
 
 import Browser
 import Browser.Navigation as Nav
@@ -104,7 +104,7 @@ update msg model =
         Receive (Ok user) ->
             case user.isLoginSuccess of
                 True ->
-                    ( { model | operationState = Loaded user }, Cmd.batch [ portSetLocalStorage user.token, Nav.load "/menu" ] )
+                    ( { model | operationState = Loaded user }, Cmd.batch [ portSetLocalStorage user.token, Nav.load "/system" ] )
 
                 False ->
                     ( { model | message = "ログインに失敗しました。", operationState = Loaded user }, Cmd.none )

@@ -119,6 +119,14 @@ class Routes()(implicit system: ActorSystem, timeout: Timeout) extends SprayJson
                 }
               }
             }
+          } ~ path("system") {
+            pathEndOrSingleSlash {
+              get {
+                using(borrow) { implicit db =>
+                  getFromResource(HTML_FILE_PATH + "system.html")
+                }
+              }
+            }
           } ~ path("systems") {
             pathEndOrSingleSlash {
               get {

@@ -13,7 +13,7 @@ var MODE = process.env.npm_lifecycle_event === "prod" ? "production" : "developm
 
 const elmBasePath = path.resolve(__dirname, 'src/elm');
 const jsBasePath = path.resolve(__dirname, 'src');
-const elmCompileFolders = ['login'];
+const elmCompileFolders = ['Login', 'System'];
 
 const entries = {};
 
