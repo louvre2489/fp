@@ -32,3 +32,8 @@ body {
 .fp-content-main {
   margin-right: 1rem;
 }
+
+/* select */
+#fp-subsystem-select {
+  width: 100rem;
+}
