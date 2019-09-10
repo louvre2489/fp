@@ -77,6 +77,7 @@ init flags url key =
 type Msg
     = InputSystemName String
     | ChangeSubSystem String
+    | ModSubSystem Int
     | SystemSettingUpdate
     | Receive (Result Http.Error SystemSetting)
     | UrlChanged Url.Url
@@ -91,6 +92,9 @@ update msg model =
 
         ChangeSubSystem subSystem ->
             ( { model | subSystemName = subSystem }, Cmd.none )
+
+        ModSubSystem subSystemId ->
+            ( { model | subSystemId = subSystemId }, Cmd.none )
 
         SystemSettingUpdate ->
             ( { model | message = "", operationState = Waiting }
@@ -184,7 +188,7 @@ view model =
                                         , div
                                             [ class "control" ]
                                             [ button
-                                                [ class "button is-info", type_ "button" ]
+                                                [ class "button is-info", type_ "button", onClick (ModSubSystem model.subSystemId) ]
                                                 [ text "設定" ]
                                             ]
                                         ]
